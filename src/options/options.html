@@ -37,6 +37,8 @@
     <label for="apiKey">API key</label>
     <input type="password" id="apiKey" autocomplete="off" />
     <p class="hint">Stored in extension storage on this machine. Anyone with access to this browser profile can read it.</p>
+    <button id="testConnection" type="button">Test connection</button>
+    <p class="hint">Sends one sample post to the endpoint above and reports the reply — or the exact error, if it fails. Grants the host permission if it is missing.</p>
     <label for="skillText">Humanizer skill (judging rubric)</label>
     <textarea id="skillText" rows="14" spellcheck="false"></textarea>
     <p class="hint">Editing this updates the instructions sent to the model; leaving it unchanged keeps tracking the bundled default.</p>

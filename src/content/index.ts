@@ -63,16 +63,29 @@ function decorate(state: ItemState): void {
   );
 }
 
+// A judge failure used to return silently, which is why a misconfigured model
+// looked exactly like a working one: pattern-only badges and no explanation.
 function applyJudgeResponse(state: ItemState, response: JudgeResponseMessage | undefined): void {
-  if (!response?.ok) return;
+  if (response === undefined) {
+    log(`judge: no response for ${state.item.id} (service worker asleep or erroring?)`);
+    return;
+  }
+  if (!response.ok) {
+    log(`judge REFUSED for ${state.item.id}: ${response.reason}`);
+    return;
+  }
   state.judge = response.result;
   state.verdict = combine(state.verdict.heuristic, response.result);
+  log(
+    `judge ok for ${state.item.id}: likelihood ${response.result.likelihood} → ${state.verdict.tier}`,
+  );
   decorate(state);
 }
 
 function requestJudgement(state: ItemState): void {
   if (state.judgeRequested || state.verdict.abstain) return;
   state.judgeRequested = true;
+  log(`judge: requesting for ${state.item.id} (${state.verdict.heuristic.words} words)`);
   const message: JudgeRequestMessage = {
     type: "aitm-judge",
     text: state.item.text,

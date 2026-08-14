@@ -1,5 +1,6 @@
 /** Options page glue: load/save config, request the API origin permission. */
 import { CONFIG_KEY, loadConfig, withDefaults, type MeterConfig } from "../config";
+import { createOpenAiCompatibleJudge } from "../judge/openaiCompatible";
 import { defaultRubric } from "../judge/prompt";
 import { fetchLatestSkill } from "../skillUpdate";
 import { distillSkill } from "../skillDistill";
@@ -79,6 +80,35 @@ async function grantUpdatePermissions(baseUrl: string): Promise<boolean> {
   return true;
 }
 
+// Long enough to clear the judge's own minimum, and patterned enough that a
+// working model should return a non-zero likelihood.
+const PROBE_TEXT = [
+  "In today's fast-paced digital world, leadership isn't just about strategy — it's about people.",
+  "Last week I delved into this with my team and unlocked a game-changing insight.",
+  "Growth. Grit. Gratitude. That's the tapestry of every transformative journey.",
+  "Agree? Repost if this resonates. ♻️",
+].join("\n");
+
+/** Runs a real request end to end and reports what actually happened. */
+async function testConnection(): Promise<void> {
+  const config = readForm();
+  if (config.apiKey === "") {
+    setStatus("Set an API key first.");
+    return;
+  }
+  if (!(await grantOrigin(apiOrigin(config.baseUrl)))) {
+    setStatus(`Host permission for ${config.baseUrl} was not granted — the judge cannot reach it.`);
+    return;
+  }
+  setStatus(`Calling ${config.model}…`);
+  try {
+    const result = await createOpenAiCompatibleJudge(config).judge(PROBE_TEXT);
+    setStatus(`✓ ${config.model} replied: likelihood ${result.likelihood}, ${result.phrases.length} phrases quoted.`);
+  } catch (err) {
+    setStatus(`✗ ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
 /** Only refresh the textarea when it was still showing the old default. */
 function refreshRubricBox(previousDefault: string): void {
   if (skillBox().value.trim() === previousDefault) skillBox().value = defaultRubric(distilledSkill);
@@ -126,6 +156,7 @@ async function init(): Promise<void> {
     skillBox().value = defaultRubric(distilledSkill);
   });
   el<HTMLButtonElement>("updateSkill").addEventListener("click", () => void updateSkillFromGitHub());
+  el<HTMLButtonElement>("testConnection").addEventListener("click", () => void testConnection());
 }
 
 void init();

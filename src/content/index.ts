@@ -89,10 +89,6 @@ const viewport = new IntersectionObserver((entries) => {
   }
 });
 
-function scoreOptions(item: FeedItem): { minWords: number } | undefined {
-  return item.kind === "comment" ? { minWords: COMMENT_MIN_WORDS } : undefined;
-}
-
 function process(item: FeedItem): void {
   const hash = hashText(item.text);
   const existing = states.get(item.id);
@@ -101,7 +97,8 @@ function process(item: FeedItem): void {
     decorate(existing);
   } else {
     const flags = analyze(item.text);
-    const verdict = combine(scoreText(item.text, flags, scoreOptions(item)), null);
+    const floor = item.kind === "comment" ? { minWords: COMMENT_MIN_WORDS } : undefined;
+    const verdict = combine(scoreText(item.text, flags, floor), null);
     const state: ItemState = { item, hash, flags, judge: null, verdict, judgeRequested: false };
     states.set(item.id, state);
     decorate(state);
@@ -133,11 +130,7 @@ function expandAll(): void {
 const expandButton = createExpandButton(document, expandAll);
 
 function truncatedCount(): number {
-  let count = 0;
-  for (const state of states.values()) {
-    if (state.item.truncated && state.item.element.isConnected) count++;
-  }
-  return count;
+  return [...states.values()].filter((s) => s.item.truncated && s.item.element.isConnected).length;
 }
 
 function scan(): void {

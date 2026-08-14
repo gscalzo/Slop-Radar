@@ -5,20 +5,20 @@ import type { Verdict } from "../verdict";
 import type { HighlightSpan, ReportItem, ReportViewModel } from "./modal";
 
 function judgeItems(text: string, judge: JudgeResult | null): ReportItem[] {
-  if (!judge) return [];
-  return judge.phrases.map((phrase) => {
-    const span = locateQuote(text, phrase.quote);
-    return { label: phrase.reason, excerpt: phrase.quote, start: span?.start ?? null, source: "judge" as const };
-  });
+  return (judge?.phrases ?? []).map((phrase) => ({
+    label: phrase.reason,
+    excerpt: phrase.quote,
+    start: locateQuote(text, phrase.quote)?.start ?? null,
+    source: "judge" as const,
+  }));
 }
 
-function toSpans(text: string, flags: Flag[], judge: JudgeResult | null): HighlightSpan[] {
-  const heuristic = flags.map((f) => ({ start: f.start, end: f.end, label: f.label }));
-  const located = (judge?.phrases ?? [])
-    .map((phrase) => ({ span: locateQuote(text, phrase.quote), label: phrase.reason }))
-    .filter((p): p is { span: { start: number; end: number }; label: string } => p.span !== null)
-    .map((p) => ({ start: p.span.start, end: p.span.end, label: `Model: ${p.label}` }));
-  return [...heuristic, ...located].sort((a, b) => a.start - b.start || a.end - b.end);
+// Quotes the judge invented, or that the post no longer contains, simply drop out.
+function judgeSpans(text: string, judge: JudgeResult | null): HighlightSpan[] {
+  return (judge?.phrases ?? []).flatMap((phrase) => {
+    const span = locateQuote(text, phrase.quote);
+    return span ? [{ ...span, label: `Model: ${phrase.reason}` }] : [];
+  });
 }
 
 /** Assemble everything the report modal needs for one post. */
@@ -29,7 +29,8 @@ export function buildReport(
   judge: JudgeResult | null,
   truncated: boolean,
 ): ReportViewModel {
-  const patternItems: ReportItem[] = flags.map((f) => ({
+  const patternSpans = flags.map((f) => ({ start: f.start, end: f.end, label: f.label }));
+  const patternItems = flags.map((f) => ({
     label: f.label,
     excerpt: f.excerpt,
     start: f.start,
@@ -44,7 +45,9 @@ export function buildReport(
     likelihood: verdict.likelihood,
     judgeSummary: judge?.summary,
     text,
-    spans: toSpans(text, flags, judge),
+    spans: [...patternSpans, ...judgeSpans(text, judge)].sort(
+      (a, b) => a.start - b.start || a.end - b.end,
+    ),
     items: [...patternItems, ...judgeItems(text, judge)],
   };
 }

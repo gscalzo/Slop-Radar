@@ -35,17 +35,16 @@ const OUTPUT_CONTRACT = [
   "Include at most 10 phrases; every quote must be copied verbatim from the post.",
 ].join(" ");
 
-function stripFrontmatter(markdown: string): string {
-  return markdown.replace(/^---\n[\s\S]*?\n---\n/, "");
+function body(markdown: string): string {
+  return markdown.replace(/^---\n[\s\S]*?\n---\n/, "").trim();
 }
 
 /** The bundled distilled snapshot, frontmatter stripped. */
-export const DEFAULT_SKILL_BODY = stripFrontmatter(distilledSnapshot).trim();
+export const DEFAULT_SKILL_BODY = body(distilledSnapshot);
 
 /** Effective default rubric: the runtime-distilled copy if present, else the bundled snapshot. */
 export function defaultRubric(distilledSkill: string): string {
-  const stripped = stripFrontmatter(distilledSkill).trim();
-  return stripped === "" ? DEFAULT_SKILL_BODY : stripped;
+  return body(distilledSkill) || DEFAULT_SKILL_BODY;
 }
 
 export interface RubricConfig {
@@ -57,7 +56,6 @@ export interface RubricConfig {
 
 /** Full system prompt: judging preamble + effective rubric + output contract. */
 export function buildSystemPrompt(config: RubricConfig): string {
-  const override = stripFrontmatter(config.skillText).trim();
-  const rubric = override === "" ? defaultRubric(config.distilledSkill) : override;
+  const rubric = body(config.skillText) || defaultRubric(config.distilledSkill);
   return `${JUDGING_PREAMBLE}\n${rubric}\n\n${OUTPUT_CONTRACT}`;
 }

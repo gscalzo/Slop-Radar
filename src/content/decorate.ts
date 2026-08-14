@@ -47,30 +47,44 @@ function ensureBadge(el: HTMLElement): HTMLButtonElement {
   return badge;
 }
 
-function applyBadgeStyle(badge: HTMLButtonElement, compact?: boolean): void {
-  if (compact) {
-    badge.style.top = "4px";
-    badge.style.right = "4px";
-    badge.style.fontSize = "10px";
-    badge.style.padding = "0 8px";
-  } else {
-    badge.style.top = "8px";
-    badge.style.right = "8px";
-    badge.style.fontSize = "11px";
-    badge.style.padding = "1px 10px";
-  }
+interface Metrics {
+  inset: string;
+  fontSize: string;
+  padding: string;
+  outline: string;
+  outlineOffset: string;
 }
 
-function applyOutline(el: HTMLElement, tier: Tier | null, compact?: boolean): void {
-  if (tier) {
-    const width = compact ? "2px" : "3px";
-    const offset = compact ? "-2px" : "-3px";
-    el.style.outline = `${width} solid ${COLORS[tier]}`;
-    el.style.outlineOffset = offset;
-  } else {
-    el.style.outline = "";
-    el.style.outlineOffset = "";
-  }
+// Comments are smaller cards, so they get a lighter version of the same treatment.
+const NORMAL: Metrics = {
+  inset: "8px",
+  fontSize: "11px",
+  padding: "1px 10px",
+  outline: "3px",
+  outlineOffset: "-3px",
+};
+const COMPACT: Metrics = {
+  inset: "4px",
+  fontSize: "10px",
+  padding: "0 8px",
+  outline: "2px",
+  outlineOffset: "-2px",
+};
+
+function metricsFor(compact?: boolean): Metrics {
+  return compact ? COMPACT : NORMAL;
+}
+
+function applyBadgeStyle(badge: HTMLButtonElement, metrics: Metrics): void {
+  badge.style.top = metrics.inset;
+  badge.style.right = metrics.inset;
+  badge.style.fontSize = metrics.fontSize;
+  badge.style.padding = metrics.padding;
+}
+
+function applyOutline(el: HTMLElement, tier: Tier | null, metrics: Metrics): void {
+  el.style.outline = tier ? `${metrics.outline} solid ${COLORS[tier]}` : "";
+  el.style.outlineOffset = tier ? metrics.outlineOffset : "";
 }
 
 function ensurePositioned(el: HTMLElement): void {
@@ -81,7 +95,7 @@ function ensurePositioned(el: HTMLElement): void {
 /** Remove any decoration previously applied to a card (badge, outline, tier marker). */
 export function clearDecoration(el: HTMLElement): void {
   el.querySelector(`.${BADGE_CLASS}`)?.remove();
-  applyOutline(el, null);
+  applyOutline(el, null, NORMAL);
   delete el.dataset.aitmTier;
 }
 
@@ -90,8 +104,9 @@ export function clearDecoration(el: HTMLElement): void {
  * inline styles, so callers re-invoke this freely on every scan.
  */
 export function decoratePost(el: HTMLElement, view: DecorationView, onOpen: () => void): void {
+  const metrics = metricsFor(view.compact);
   ensurePositioned(el);
-  applyOutline(el, view.tier, view.compact);
+  applyOutline(el, view.tier, metrics);
   const badge = ensureBadge(el);
   // Rebind on every call: the caller's state may have been rebuilt (e.g. after
   // a "…see more" expansion), and a listener bound only at creation would keep
@@ -103,6 +118,6 @@ export function decoratePost(el: HTMLElement, view: DecorationView, onOpen: () =
   badge.style.background = view.tier ? COLORS[view.tier] : "#757575";
   badge.textContent = badgeLabel(view);
   badge.title = badgeTitle(view);
-  applyBadgeStyle(badge, view.compact);
+  applyBadgeStyle(badge, metrics);
   el.dataset.aitmTier = view.tier ?? "none";
 }

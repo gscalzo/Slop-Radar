@@ -6,25 +6,14 @@ export const SKILL_SOURCE = {
 
 export class SkillUpdateError extends Error {}
 
-function validateSkillText(text: string): boolean {
-  const trimmed = text.trim();
-
-  // Must be at least 500 chars
-  if (trimmed.length < 500) {
-    return false;
-  }
-
-  // Must mention humanizer (case-insensitive)
-  if (!/humanizer/i.test(trimmed)) {
-    return false;
-  }
-
-  // Must start with frontmatter (---) or markdown heading (#)
-  if (!trimmed.startsWith("---") && !trimmed.startsWith("#")) {
-    return false;
-  }
-
-  return true;
+// The real skill is substantial, names itself, and opens with frontmatter or a
+// heading — enough to tell it from an error page or a redirect.
+function looksLikeSkill(text: string): boolean {
+  return (
+    text.length >= 500 &&
+    /humanizer/i.test(text) &&
+    (text.startsWith("---") || text.startsWith("#"))
+  );
 }
 
 export async function fetchLatestSkill(fetchFn: typeof fetch = fetch): Promise<string> {
@@ -32,12 +21,9 @@ export async function fetchLatestSkill(fetchFn: typeof fetch = fetch): Promise<s
   if (!response.ok) {
     throw new SkillUpdateError(`skill download failed: HTTP ${response.status}`);
   }
-
   const text = await response.text();
-
-  if (!validateSkillText(text)) {
+  if (!looksLikeSkill(text.trim())) {
     throw new SkillUpdateError("downloaded file does not look like the humanizer skill");
   }
-
   return text;
 }

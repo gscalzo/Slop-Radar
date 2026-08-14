@@ -1,48 +1,24 @@
 import type { MeterConfig } from "../config";
 import { clamp01 } from "../core/clamp";
+import { chatCompletion } from "./chat";
 import { buildSystemPrompt } from "./prompt";
 import type { Judge, JudgePhrase, JudgeResult } from "./types";
 
 export class JudgeRequestError extends Error {}
 
-interface ChatCompletionResponse {
-  choices?: Array<{ message?: { content?: unknown } }>;
+const MAX_PHRASES = 10;
+
+function fail(detail: string): Error {
+  return new JudgeRequestError(`judge request ${detail}`);
 }
 
-function requestBody(config: MeterConfig, text: string): unknown {
-  return {
-    model: config.model,
-    temperature: 0,
-    response_format: { type: "json_object" },
-    messages: [
-      { role: "system", content: buildSystemPrompt(config) },
-      { role: "user", content: text },
-    ],
-  };
+function isPhrase(value: unknown): value is JudgePhrase {
+  const phrase = value as JudgePhrase | null;
+  return typeof phrase?.quote === "string" && typeof phrase?.reason === "string";
 }
 
-function extractContent(data: ChatCompletionResponse): string {
-  const content = data.choices?.[0]?.message?.content;
-  if (typeof content !== "string") {
-    throw new JudgeRequestError("judge response had no message content");
-  }
-  return content;
-}
-
-function parsePhrases(value: unknown): JudgePhrase[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .filter(
-      (p): p is JudgePhrase =>
-        typeof p === "object" && p !== null &&
-        typeof (p as JudgePhrase).quote === "string" &&
-        typeof (p as JudgePhrase).reason === "string",
-    )
-    .slice(0, 10);
-}
-
-function toRecord(raw: unknown): Record<string, unknown> {
-  return typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {};
+function asRecord(value: unknown): Record<string, unknown> {
+  return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
 }
 
 function parseLikelihood(value: unknown): number {
@@ -60,31 +36,12 @@ export function parseJudgeResult(content: string): JudgeResult {
   } catch {
     throw new JudgeRequestError("judge returned invalid JSON");
   }
-  const record = toRecord(raw);
+  const record = asRecord(raw);
   return {
     likelihood: parseLikelihood(record.likelihood),
     summary: typeof record.summary === "string" ? record.summary : undefined,
-    phrases: parsePhrases(record.phrases),
+    phrases: Array.isArray(record.phrases) ? record.phrases.filter(isPhrase).slice(0, MAX_PHRASES) : [],
   };
-}
-
-async function requestJudgement(
-  config: MeterConfig,
-  fetchFn: typeof fetch,
-  text: string,
-): Promise<JudgeResult> {
-  const response = await fetchFn(`${config.baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${config.apiKey}`,
-    },
-    body: JSON.stringify(requestBody(config, text)),
-  });
-  if (!response.ok) {
-    throw new JudgeRequestError(`judge request failed: HTTP ${response.status}`);
-  }
-  return parseJudgeResult(extractContent((await response.json()) as ChatCompletionResponse));
 }
 
 /** Works against any OpenAI-compatible /chat/completions endpoint. */
@@ -92,5 +49,17 @@ export function createOpenAiCompatibleJudge(
   config: MeterConfig,
   fetchFn: typeof fetch = fetch,
 ): Judge {
-  return { judge: (text) => requestJudgement(config, fetchFn, text) };
+  const body = (text: string): unknown => ({
+    model: config.model,
+    temperature: 0,
+    response_format: { type: "json_object" },
+    messages: [
+      { role: "system", content: buildSystemPrompt(config) },
+      { role: "user", content: text },
+    ],
+  });
+  return {
+    judge: async (text) =>
+      parseJudgeResult(await chatCompletion(config, body(text), fetchFn, fail)),
+  };
 }

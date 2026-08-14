@@ -69,16 +69,27 @@ Decisions and trade-offs are recorded in [docs/adr/](./docs/adr/) — start with
 [ADR 0005](./docs/adr/0005-model-primary-analysis.md) (model-primary analysis) and
 [ADR 0002](./docs/adr/0002-dom-only-extraction.md) (read-only DOM posture).
 
-## Install (unpacked)
+## Install
 
 ```bash
-npm install
-npm run build
+npm start          # build + launch Chrome with the extension loaded
 ```
 
-Open `chrome://extensions`, enable *Developer mode* → *Load unpacked* → pick the
-`dist/` folder, then visit `https://www.linkedin.com/feed/` — the content script runs
-only there.
+Chrome can't side-load an unpacked extension into your everyday profile from the
+command line, so `npm start` (i.e. `./scripts/install.sh`) launches a throwaway
+profile in `.chrome-profile/` with the extension already loaded and LinkedIn open.
+Your normal browser is untouched; you log into LinkedIn once in that window.
+`--clean` resets the profile.
+
+To install into your everyday profile instead:
+
+```bash
+./scripts/install.sh --build
+```
+
+then open `chrome://extensions`, enable *Developer mode* → *Load unpacked* → pick
+the printed `dist/` folder, and visit `https://www.linkedin.com/feed/` — the
+content script runs only there.
 
 ## Configure the model
 
@@ -125,6 +136,7 @@ src/adapters    SiteAdapter interface + the LinkedIn adapter — the ONLY file t
 src/content     border/badge decoration, report modal, orchestrator glue
 src/background  service worker: owns the API key, caches verdicts
 src/options     options page
+scripts         install.sh — build and load into Chrome
 ```
 
 Supporting another site with text blocks means one new `SiteAdapter` and a manifest

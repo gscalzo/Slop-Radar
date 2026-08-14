@@ -146,16 +146,16 @@ describe("linkedInAdapter", () => {
       expect(selectors["main"]).toBe(1);
     });
 
-    it("reports the id prefixes actually present, so renamed anchors show up", () => {
+    it("reports urn attributes under any name, so a renamed anchor shows up", () => {
       const root = feed(`
         <div data-id="urn:li:activity:111"></div>
         <div data-id="urn:li:activity:222"></div>
-        <div data-id="urn:li:fsd_update:333"></div>
+        <div componentkey="urn:li:fsd_update:333"></div>
         <div data-id="not-a-urn"></div>
       `);
-      expect(linkedInAdapter.diagnose(root).idPrefixes).toEqual({
-        "urn:li:activity": 2,
-        "urn:li:fsd_update": 1,
+      expect(linkedInAdapter.diagnose(root).idAttributes).toEqual({
+        "data-id=urn:li:activity": 2,
+        "componentkey=urn:li:fsd_update": 1,
       });
     });
   });

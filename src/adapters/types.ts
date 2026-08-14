@@ -20,8 +20,13 @@ export interface FeedItem {
 export interface AdapterDiagnostics {
   /** Match count for each candidate selector the adapter knows about. */
   selectors: Record<string, number>;
-  /** Count per observed id prefix, e.g. "urn:li:activity" — reveals renamed anchors. */
-  idPrefixes: Record<string, number>;
+  /**
+   * Every attribute in the page carrying an id the adapter might anchor to,
+   * keyed "attribute=prefix" (e.g. "componentkey=urn:li:fsd_update"). Counting
+   * attributes we do NOT look at is the point: that is how a renamed anchor
+   * shows itself instead of registering as a silent zero.
+   */
+  idAttributes: Record<string, number>;
 }
 
 /**

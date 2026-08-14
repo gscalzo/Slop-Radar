@@ -144,21 +144,22 @@ const PROBES = [
   "main",
 ];
 
-function idOf(el: Element): string {
-  return el.getAttribute("data-id") ?? el.getAttribute("data-urn") ?? "";
-}
-
 /** "urn:li:activity:123" → "urn:li:activity": the part LinkedIn is free to rename. */
 function prefixOf(id: string): string {
   return id.split(":").slice(0, 3).join(":");
 }
 
-function countIdPrefixes(root: ParentNode): Record<string, number> {
+/** Any attribute holding a LinkedIn URN, whatever it is called. */
+function urnKeys(el: Element): string[] {
+  return [...el.attributes]
+    .filter((attr) => attr.value.startsWith("urn:li:"))
+    .map((attr) => `${attr.name}=${prefixOf(attr.value)}`);
+}
+
+function countIdAttributes(root: ParentNode): Record<string, number> {
   const counts: Record<string, number> = {};
-  for (const el of root.querySelectorAll("[data-id], [data-urn]")) {
-    const id = idOf(el);
-    if (!id.startsWith("urn:")) continue;
-    counts[prefixOf(id)] = (counts[prefixOf(id)] ?? 0) + 1;
+  for (const el of root.querySelectorAll("*")) {
+    for (const key of urnKeys(el)) counts[key] = (counts[key] ?? 0) + 1;
   }
   return counts;
 }
@@ -166,7 +167,7 @@ function countIdPrefixes(root: ParentNode): Record<string, number> {
 function diagnose(root: ParentNode): AdapterDiagnostics {
   const selectors: Record<string, number> = {};
   for (const probe of PROBES) selectors[probe] = root.querySelectorAll(probe).length;
-  return { selectors, idPrefixes: countIdPrefixes(root) };
+  return { selectors, idAttributes: countIdAttributes(root) };
 }
 
 export const linkedInAdapter: SiteAdapter = {

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createLogger, debugEnabled } from "./debug";
+import { createLogger, debugEnabled, formatCounts } from "./debug";
 
 function storage(value: string | null): Pick<Storage, "getItem"> {
   return { getItem: () => value };
@@ -22,6 +22,16 @@ describe("debugEnabled", () => {
       },
     };
     expect(debugEnabled(blocked)).toBe(true);
+  });
+});
+
+describe("formatCounts", () => {
+  it("flattens counts onto one line", () => {
+    expect(formatCounts({ "[data-id]": 0, main: 1 })).toBe("[data-id]=0  main=1");
+  });
+
+  it("says so when there is nothing to report", () => {
+    expect(formatCounts({})).toBe("(none)");
   });
 });
 

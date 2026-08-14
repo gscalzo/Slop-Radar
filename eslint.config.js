@@ -3,7 +3,9 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["dist/**", "coverage/**", "node_modules/**"],
+    // scripts/ holds shell tools and a snippet meant to be pasted into a
+    // browser console — neither is extension source, and neither type-checks.
+    ignores: ["dist/**", "coverage/**", "node_modules/**", "scripts/**"],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

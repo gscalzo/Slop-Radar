@@ -6,7 +6,7 @@
 import { linkedInAdapter } from "../adapters/linkedin";
 import type { FeedItem } from "../adapters/types";
 import { loadConfig } from "../config";
-import { createLogger } from "../debug";
+import { createLogger, formatCounts } from "../debug";
 import { analyze } from "../core/analyze";
 import { hashText } from "../core/hash";
 import { scoreText } from "../core/score";
@@ -172,10 +172,16 @@ function logScan(items: FeedItem[]): void {
   const fingerprint = JSON.stringify(summary);
   if (fingerprint === lastLogged) return;
   lastLogged = fingerprint;
-  log("scan", summary);
+  log(`scan ${fingerprint}`);
   // Nothing matched: the page is either not the feed or LinkedIn renamed its
   // markup. The census says which, naming the exact selector that went stale.
-  if (items.length === 0) log("no items — selector census", linkedInAdapter.diagnose(document));
+  if (items.length === 0) logCensus();
+}
+
+function logCensus(): void {
+  const { selectors, idAttributes } = linkedInAdapter.diagnose(document);
+  log(`no items — selectors: ${formatCounts(selectors)}`);
+  log(`no items — id attributes: ${formatCounts(idAttributes)}`);
 }
 
 function debounce(fn: () => void, ms: number): () => void {

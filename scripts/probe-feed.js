@@ -1,74 +1,81 @@
 /*
- * Paste this whole file into the DevTools console on a LinkedIn feed page.
+ * Paste this whole file into the DevTools console on a LinkedIn feed page,
+ * with a few posts visible. Returns one string — consoles collapse objects,
+ * and the collapsed half is the half you needed.
  *
- * It needs no extension: it reports what the page actually contains, so the
- * adapter's selectors can be rewritten against reality rather than guessed.
- * Everything comes back as one string, because the console collapses objects
- * and the collapsed part is always the part you needed.
+ * LinkedIn's feed is now server-driven UI (data-sdui-screen), with hashed
+ * class names that rotate every build, no urn:li: values, and componentkey
+ * UUIDs that identify a render rather than a post. So this does not look for
+ * known selectors. It finds the elements where post text actually bottoms out,
+ * then prints the ancestor chain above each one — with sibling counts, so the
+ * repeated card container gives itself away.
  */
 (() => {
-  const SELECTORS = [
-    '[data-id^="urn:li:activity"]',
-    '[data-urn^="urn:li:activity"]',
-    '[data-id^="urn:li:comment"]',
-    "article.comments-comment-entity",
-    ".update-components-update-v2__commentary",
-    ".update-components-text",
-    ".feed-shared-update-v2__description",
-    ".comments-comment-item__main-content",
-    ".feed-shared-inline-show-more-text__see-more-less-toggle",
-    ".feed-shared-update-v2",
-    ".fie-impression-container",
-    "[componentkey]",
-    "[data-id]",
-    "[data-urn]",
-    "main",
-    "article",
-  ];
+  const SKIP = new Set(["class", "style", "d", "viewBox", "xmlns", "fill", "stroke"]);
+  const MAX = 70;
+  const clip = (v) => (v.length > MAX ? `${v.slice(0, MAX)}…` : v);
+  const text = (el) => (el.textContent ?? "").trim();
 
-  const count = (sel) => `${sel}=${document.querySelectorAll(sel).length}`;
+  const attrs = (el) =>
+    [...el.attributes]
+      .filter((a) => !SKIP.has(a.name))
+      .map((a) => `${a.name}="${clip(a.value)}"`)
+      .join(" ");
 
-  // Every attribute anywhere in the page whose value is a LinkedIn URN,
-  // keyed "attribute=urn:li:prefix". Finds anchors under names we don't know.
-  const urns = {};
+  // Class signature: hashed names rotate per build, but WITHIN one page they
+  // still mark siblings that are the same kind of thing.
+  const sig = (el) => `${el.tagName.toLowerCase()}.${[...el.classList].slice(0, 2).join(".")}`;
+  const twins = (el) =>
+    el.parentElement ? [...el.parentElement.children].filter((c) => sig(c) === sig(el)).length : 0;
+
+  const describe = (el) =>
+    `${sig(el)} ${attrs(el)} children=${el.children.length} text=${text(el).length} twins=${twins(el)}`;
+
+  // An element where text "bottoms out": long enough to be prose, and not
+  // simply inherited from one child (which would make it a wrapper).
+  const isLeafText = (el) => {
+    const len = text(el).length;
+    if (len < 120) return false;
+    return [...el.children].every((c) => text(c).length < len * 0.8);
+  };
+
+  const leaves = [...document.querySelectorAll("div, span, p")].filter(isLeafText).slice(0, 6);
+
+  const chains = leaves.map((leaf, i) => {
+    const lines = [`--- text ${i + 1} (${text(leaf).length} chars) ---`, `"${clip(text(leaf))}"`];
+    let node = leaf;
+    for (let d = 0; d < 9 && node && node !== document.body; d += 1) {
+      lines.push(`${"  ".repeat(d)}${describe(node)}`);
+      node = node.parentElement;
+    }
+    return lines.join("\n");
+  });
+
+  // Every data-* / aria-* name in the page: the stable-looking candidates.
+  const names = new Map();
   for (const el of document.querySelectorAll("*")) {
-    for (const attr of el.attributes) {
-      if (!attr.value.startsWith("urn:li:")) continue;
-      const key = `${attr.name}=${attr.value.split(":").slice(0, 3).join(":")}`;
-      urns[key] = (urns[key] ?? 0) + 1;
+    for (const a of el.attributes) {
+      if (!/^(data-|aria-)/.test(a.name)) continue;
+      names.set(a.name, (names.get(a.name) ?? 0) + 1);
     }
   }
 
-  // The deepest elements holding a paragraph's worth of text are the post
-  // bodies; their class names are what a text selector should target.
-  const textish = [];
-  for (const el of document.querySelectorAll("div, span, p")) {
-    const text = el.textContent ?? "";
-    if (text.length < 200 || el.children.length > 3) continue;
-    textish.push(`${el.tagName.toLowerCase()}.${(el.className || "(no class)").toString().slice(0, 90)}`);
-  }
-
-  const top = (list, n) =>
-    Object.entries(
-      list.reduce((acc, key) => ({ ...acc, [key]: (acc[key] ?? 0) + 1 }), {}),
-    )
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, n)
-      .map(([key, n2]) => `${n2}x ${key}`);
+  const seeMore = [...document.querySelectorAll("button, a, span")]
+    .filter((el) => /^(…|\.\.\.)?\s*(see|show) more$/i.test(text(el)))
+    .slice(0, 4)
+    .map((el) => `${describe(el)}  parent: ${el.parentElement ? sig(el.parentElement) : "-"}`);
 
   return [
-    `URL: ${location.href}`,
+    `URL: ${location.href}  elements: ${document.querySelectorAll("*").length}`,
+    `leaf text blocks: ${[...document.querySelectorAll("div, span, p")].filter(isLeafText).length}`,
     "",
-    "SELECTORS",
-    SELECTORS.map(count).join("\n"),
+    "DATA/ARIA ATTRIBUTE NAMES",
+    [...names.entries()].sort((a, b) => b[1] - a[1]).map(([n, c]) => `${n} x${c}`).join("  "),
     "",
-    "URN-BEARING ATTRIBUTES",
-    Object.entries(urns)
-      .sort((a, b) => b[1] - a[1])
-      .map(([key, n]) => `${key} x${n}`)
-      .join("\n") || "(none)",
+    "CHAINS ABOVE POST TEXT",
+    chains.join("\n\n") || "(none found — scroll so posts are visible, then rerun)",
     "",
-    "CLASSES OF TEXT-BEARING ELEMENTS (top 15)",
-    top(textish, 15).join("\n") || "(none)",
+    "SEE-MORE CONTROLS",
+    seeMore.join("\n") || "(none)",
   ].join("\n");
 })();

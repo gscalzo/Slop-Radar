@@ -1,0 +1,28 @@
+{
+  "name": "slop-radar",
+  "version": "0.1.0",
+  "description": "Chrome extension that flags AI-patterned writing in the LinkedIn feed",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "check": "npm run lint && npm run typecheck && npm run test:coverage"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@types/chrome": "^0.2.5",
+    "@vitest/coverage-v8": "^2.1.9",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.39.4",
+    "happy-dom": "^15.11.7",
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.60.1",
+    "vitest": "^2.1.0"
+  }
+}

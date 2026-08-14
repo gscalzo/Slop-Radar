@@ -6,6 +6,7 @@
 import { linkedInAdapter } from "../adapters/linkedin";
 import type { FeedItem } from "../adapters/types";
 import { loadConfig } from "../config";
+import { createLogger } from "../debug";
 import { analyze } from "../core/analyze";
 import { hashText } from "../core/hash";
 import { scoreText } from "../core/score";
@@ -20,6 +21,8 @@ import { buildReport } from "./report";
 
 // Comments are short by nature; see ADR 0004 for the lower abstain floor.
 const COMMENT_MIN_WORDS = 20;
+
+const log = createLogger(localStorage, console.log.bind(console));
 
 let checkComments = true;
 
@@ -133,13 +136,46 @@ function truncatedCount(): number {
   return [...states.values()].filter((s) => s.item.truncated && s.item.element.isConnected).length;
 }
 
+function summarise(items: FeedItem[]): Record<string, unknown> {
+  return {
+    found: items.length,
+    posts: items.filter((i) => i.kind === "post").length,
+    comments: items.filter((i) => i.kind === "comment").length,
+    verdicts: [...states.values()].map((s) => ({
+      kind: s.item.kind,
+      words: s.verdict.heuristic.words,
+      tier: s.verdict.tier,
+      abstain: s.verdict.abstain,
+      basis: s.verdict.basis,
+      truncated: s.item.truncated,
+    })),
+  };
+}
+
 function scan(): void {
   pruneDisconnected();
-  for (const item of linkedInAdapter.findItems(document)) {
+  const items = linkedInAdapter.findItems(document);
+  for (const item of items) {
     if (item.kind === "comment" && !checkComments) continue;
     process(item);
   }
   updateExpandButton(expandButton, truncatedCount());
+  logScan(items);
+}
+
+// LinkedIn mutates the DOM constantly, so scans are frequent; only say
+// something when the picture actually changed.
+let lastLogged = "";
+
+function logScan(items: FeedItem[]): void {
+  const summary = summarise(items);
+  const fingerprint = JSON.stringify(summary);
+  if (fingerprint === lastLogged) return;
+  lastLogged = fingerprint;
+  log("scan", summary);
+  // Nothing matched: the page is either not the feed or LinkedIn renamed its
+  // markup. The census says which, naming the exact selector that went stale.
+  if (items.length === 0) log("no items — selector census", linkedInAdapter.diagnose(document));
 }
 
 function debounce(fn: () => void, ms: number): () => void {
@@ -151,6 +187,7 @@ function debounce(fn: () => void, ms: number): () => void {
 }
 
 async function boot(): Promise<void> {
+  log(`booted on ${location.href} — silence with localStorage.slopRadarDebug = "off"`);
   try {
     checkComments = (await loadConfig()).checkComments;
   } catch {

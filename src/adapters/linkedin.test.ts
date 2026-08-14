@@ -130,6 +130,36 @@ describe("linkedInAdapter", () => {
     expect(items.map((i) => i.kind)).toEqual(["post"]);
   });
 
+  describe("diagnose", () => {
+    it("counts each selector separately so a stale one is identifiable", () => {
+      const root = feed(`
+        <main>
+          <div data-id="urn:li:activity:111">
+            <span class="update-components-text">Post text.</span>
+          </div>
+        </main>
+      `);
+      const { selectors } = linkedInAdapter.diagnose(root);
+      expect(selectors['[data-id^="urn:li:activity"]']).toBe(1);
+      expect(selectors[".update-components-text"]).toBe(1);
+      expect(selectors[".feed-shared-update-v2__description"]).toBe(0);
+      expect(selectors["main"]).toBe(1);
+    });
+
+    it("reports the id prefixes actually present, so renamed anchors show up", () => {
+      const root = feed(`
+        <div data-id="urn:li:activity:111"></div>
+        <div data-id="urn:li:activity:222"></div>
+        <div data-id="urn:li:fsd_update:333"></div>
+        <div data-id="not-a-urn"></div>
+      `);
+      expect(linkedInAdapter.diagnose(root).idPrefixes).toEqual({
+        "urn:li:activity": 2,
+        "urn:li:fsd_update": 1,
+      });
+    });
+  });
+
   describe("expandTruncated", () => {
     function countClicks(selector: string): { calls: () => number } {
       let calls = 0;

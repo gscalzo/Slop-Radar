@@ -1,4 +1,4 @@
-import type { FeedItem, SiteAdapter } from "./types";
+import type { AdapterDiagnostics, FeedItem, SiteAdapter } from "./types";
 
 // LinkedIn's class names are obfuscated and churn; data-* URN attributes are
 // the stable anchors. All selectors live here and nowhere else.
@@ -126,4 +126,52 @@ function expandTruncated(root: ParentNode): number {
   return clicked.size;
 }
 
-export const linkedInAdapter: SiteAdapter = { name: "linkedin-feed", findItems, expandTruncated };
+// Every selector this adapter depends on, listed one at a time so a census can
+// name the exact one that stopped matching. The last few are sanity probes:
+// they answer "is this even a rendered feed?" when all the real ones read zero.
+const PROBES = [
+  '[data-id^="urn:li:activity"]',
+  '[data-urn^="urn:li:activity"]',
+  '[data-id^="urn:li:comment"]',
+  "article.comments-comment-entity",
+  ".update-components-update-v2__commentary",
+  ".update-components-text",
+  ".feed-shared-update-v2__description",
+  ".comments-comment-item__main-content",
+  SEE_MORE_CLASS,
+  "[data-id]",
+  "[data-urn]",
+  "main",
+];
+
+function idOf(el: Element): string {
+  return el.getAttribute("data-id") ?? el.getAttribute("data-urn") ?? "";
+}
+
+/** "urn:li:activity:123" → "urn:li:activity": the part LinkedIn is free to rename. */
+function prefixOf(id: string): string {
+  return id.split(":").slice(0, 3).join(":");
+}
+
+function countIdPrefixes(root: ParentNode): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const el of root.querySelectorAll("[data-id], [data-urn]")) {
+    const id = idOf(el);
+    if (!id.startsWith("urn:")) continue;
+    counts[prefixOf(id)] = (counts[prefixOf(id)] ?? 0) + 1;
+  }
+  return counts;
+}
+
+function diagnose(root: ParentNode): AdapterDiagnostics {
+  const selectors: Record<string, number> = {};
+  for (const probe of PROBES) selectors[probe] = root.querySelectorAll(probe).length;
+  return { selectors, idPrefixes: countIdPrefixes(root) };
+}
+
+export const linkedInAdapter: SiteAdapter = {
+  name: "linkedin-feed",
+  findItems,
+  diagnose,
+  expandTruncated,
+};

@@ -72,24 +72,51 @@ Decisions and trade-offs are recorded in [docs/adr/](./docs/adr/) — start with
 ## Install
 
 ```bash
-npm start          # build + launch Chrome with the extension loaded
+npm start                            # auto-detect a browser and install
+npm start -- --browser arc           # or name one: arc|chrome|chromium|brave|edge
 ```
 
-Chrome can't side-load an unpacked extension into your everyday profile from the
-command line, so `npm start` (i.e. `./scripts/install.sh`) launches a throwaway
-profile in `.chrome-profile/` with the extension already loaded and LinkedIn open.
-Your normal browser is untouched; you log into LinkedIn once in that window.
-`--clean` resets the profile.
+`./scripts/install.sh` builds first, then takes one of two paths, because
+browsers disagree about command-line extension loading:
 
-To install into your everyday profile instead:
+- **Chrome, Chromium, Brave, Edge** honour `--load-extension`, so the script
+  launches a throwaway profile in `.chrome-profile/` with the extension already
+  loaded and LinkedIn open. Your everyday profile, extensions and cookies are
+  untouched; you log into LinkedIn once in that window. `--clean` resets it.
+- **Arc** accepts those flags and silently ignores them — it always uses its own
+  profile (verified against Arc 1.158). So the script copies the `dist/` path to
+  your clipboard and opens Arc's extensions page: turn on *Developer mode* →
+  *Load unpacked* → <kbd>⌘⇧G</kbd>, paste, *Open*. That install persists across
+  restarts; after a code change run `npm run build` and hit reload on the card.
+
+`--build` skips the browser entirely and just prints the manual steps. Either
+way the content script only runs on `https://www.linkedin.com/feed/`.
+
+## Distribution
 
 ```bash
-./scripts/install.sh --build
+npm run package                      # → slop-radar-<version>.zip
 ```
 
-then open `chrome://extensions`, enable *Developer mode* → *Load unpacked* → pick
-the printed `dist/` folder, and visit `https://www.linkedin.com/feed/` — the
-content script runs only there.
+A zip of `dist/` is the only packaging format worth producing, because
+[off-store CRX installs are dead outside Linux](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions):
+Chrome stopped honouring local CRX files on Windows in Chrome 33 and on macOS in
+Chrome 44. On those platforms an extension can only arrive three ways:
+
+| Route | Reach | Cost |
+| --- | --- | --- |
+| **Chrome Web Store** — public, or *unlisted* (link-only) | everyone, Arc/Brave/Edge included | one-time $5 developer registration; review from hours to days |
+| **Enterprise policy** (`ExtensionInstallForcelist` + self-hosted update manifest) | machines you administer | needs MDM and a file server |
+| **Load unpacked** (what `npm start` does) | you and anyone who clones the repo | free, but each user needs Developer mode on |
+
+[Self-hosting a CRX](https://developer.chrome.com/docs/extensions/how-to/distribute/host-on-linux)
+with your own update manifest still works on Linux, where users can install a
+packed extension that the Web Store never signed.
+
+For something like this, **unlisted on the Web Store** is the pragmatic middle:
+no public listing, a stable link, and automatic updates. Worth knowing before you
+submit — review will focus on the remote-code and privacy story, so the listing
+has to disclose that post text is sent to a user-configured endpoint.
 
 ## Configure the model
 
@@ -136,7 +163,7 @@ src/adapters    SiteAdapter interface + the LinkedIn adapter — the ONLY file t
 src/content     border/badge decoration, report modal, orchestrator glue
 src/background  service worker: owns the API key, caches verdicts
 src/options     options page
-scripts         install.sh — build and load into Chrome
+scripts         install.sh (build + load into a browser), package.sh (store zip)
 ```
 
 Supporting another site with text blocks means one new `SiteAdapter` and a manifest

@@ -91,10 +91,14 @@ function requestJudgement(state: ItemState): void {
     text: state.item.text,
     hash: state.hash,
   };
-  chrome.runtime.sendMessage(message, (response: JudgeResponseMessage | undefined) => {
-    void chrome.runtime.lastError; // swallow "no receiver" errors
-    applyJudgeResponse(state, response);
-  });
+  try {
+    chrome.runtime.sendMessage(message, (response: JudgeResponseMessage | undefined) => {
+      void chrome.runtime.lastError; // swallow "no receiver" errors
+      applyJudgeResponse(state, response);
+    });
+  } catch {
+    shutdown();
+  }
 }
 
 const viewport = new IntersectionObserver((entries) => {
@@ -165,7 +169,34 @@ function summarise(items: FeedItem[]): Record<string, unknown> {
   };
 }
 
+/*
+ * Reloading an unpacked extension orphans the content script already running
+ * in open tabs: chrome.runtime loses its id and every call throws "Extension
+ * context invalidated". Nothing can be done from here — the page has to be
+ * reloaded to get a fresh script — so stop cleanly instead of throwing on
+ * every mutation, and say what the user needs to do.
+ */
+function contextAlive(): boolean {
+  return chrome.runtime?.id !== undefined;
+}
+
+let mutations: MutationObserver | undefined;
+let stopped = false;
+
+function shutdown(): void {
+  if (stopped) return;
+  stopped = true;
+  mutations?.disconnect();
+  viewport.disconnect();
+  expandButton.remove();
+  log("extension was reloaded — refresh this page to resume");
+}
+
 function scan(): void {
+  if (!contextAlive()) {
+    shutdown();
+    return;
+  }
   pruneDisconnected();
   const items = linkedInAdapter.findItems(document);
   for (const item of items) {
@@ -216,8 +247,8 @@ async function boot(): Promise<void> {
   chrome.runtime.onMessage.addListener((message: ExpandRequestMessage) => {
     if (message?.type === "aitm-expand") expandAll();
   });
-  const debouncedScan = debounce(scan, 400);
-  new MutationObserver(debouncedScan).observe(document.body, { childList: true, subtree: true });
+  mutations = new MutationObserver(debounce(scan, 400));
+  mutations.observe(document.body, { childList: true, subtree: true });
   scan();
 }
 

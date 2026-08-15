@@ -42,7 +42,7 @@ expensive mistake, so the boundary stays where false positives are rarest.
 ## Consequences
 
 - **The judge measures patterning, not authorship, and now we can prove it.**
-  AI prose with concrete specifics and no surface tells scores 0.14 on average —
+  AI prose with concrete specifics and no surface tells scores 0.14 on average,
   indistinguishable from human writing. Those are not bugs to fix; a post with
   no AI-typical patterning *should* read green, which is exactly what ADR 0001
   claims this tool does. The eval labels them "ai" because a machine wrote them,
@@ -50,7 +50,7 @@ expensive mistake, so the boundary stays where false positives are rarest.
 - The one human sample luna scored above 0.35 is a 2013 Stack Exchange answer
   that opens "This is a really good question" and continues in imperative
   bullets. It reads formulaic because it is formulaic. The badge says "AI tells:
-  medium", not "this person used AI" — so this is the tool working.
+  medium", not "this person used AI", so this is the tool working.
 - The corpus is small enough that a 0.01 AUC difference means nothing. Re-run
   after adding samples before treating any close comparison as a result.
 - The AI half was written in a single session by one model, so it carries one

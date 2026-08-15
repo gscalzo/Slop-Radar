@@ -14,7 +14,7 @@ Brave and Edge honour `--load-extension` when pointed at a fresh
 `--user-data-dir`. Arc accepts both flags and silently ignores them: probed
 against Arc 1.158 with a scratch data directory, Arc created nothing in it, kept
 using its own profile, and did not register the extension. There is no error to
-detect — only the absence of an effect.
+detect, only the absence of an effect.
 
 **Off-store packaging is mostly a dead end.** Chrome stopped honouring local CRX
 files for external installs on Windows in Chrome 33 and on macOS in Chrome 44.
@@ -32,8 +32,8 @@ on Linux. So a self-signed CRX would serve one platform and mislead on two.
   skips the browser and prints the steps.
 - **`scripts/package.sh` produces `slop-radar-<version>.zip` and nothing else.**
   That is the Chrome Web Store's input format, and a Web Store listing is the
-  one artifact every Chromium browser here — Arc, Brave, Edge included — can
-  install. No CRX is generated.
+  one artifact every Chromium browser here can install, Arc, Brave and Edge
+  included. No CRX is generated.
 - **Unlisted on the Web Store is the recommended distribution**, recorded in the
   README next to the enterprise-policy and Load-unpacked alternatives so the
   trade-offs are visible when someone wants wider reach.

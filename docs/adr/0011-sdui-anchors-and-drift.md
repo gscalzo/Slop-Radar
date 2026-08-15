@@ -31,8 +31,8 @@ suite. Post identity is the card's `componentkey`
 
 **Extract text from a clone, not from `textContent`.** A body is spans and
 `<br>`s wrapping the "…more" button. Reading it raw appends the button's label
-to every clamped post and welds the lines together — which would quietly
-disable the line-oriented detectors rather than fail.
+to every clamped post and welds the lines together, which would quietly disable the
+line-oriented detectors rather than fail.
 
 **Comments are inside their post's card and reuse the same testids**, so a post
 reads only bodies not inside a `replaceableComment_` container. Without that, a
@@ -50,8 +50,8 @@ as an outline for when the census is not enough.
 - The next redesign is a census read and one file changed, not four rounds of
   probing.
 - `FeedItem.id` is no longer a URN. It was always specified as "stable id", so
-  nothing outside the adapter changes — but cached verdicts do not survive a
-  change in LinkedIn's key format.
+  nothing outside the adapter changes. Cached verdicts do not survive a change in
+  LinkedIn's key format, though.
 - Test fixtures are shaped from the captured DOM, hashed classes omitted. They
   will drift from reality without anyone noticing; the census is what catches
   that, not the tests.

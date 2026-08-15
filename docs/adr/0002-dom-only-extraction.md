@@ -3,7 +3,7 @@
 ## Status
 
 Accepted. Amended by [ADR 0007](./0007-user-triggered-expansion.md): "no
-synthetic clicks" is relaxed to "no *unprompted* synthetic clicks" — an explicit
+synthetic clicks" is relaxed to "no *unprompted* synthetic clicks", so an explicit
 user command may expand "…see more" toggles.
 
 ## Context
@@ -21,12 +21,12 @@ read the rendered DOM, programmatically click "see more", or call LinkedIn's int
   expands a post naturally, the text hash changes and it is re-scored.
 - All LinkedIn DOM knowledge lives in `src/adapters/linkedin.ts` behind the
   `SiteAdapter` interface. Posts are anchored by `data-id`/`data-urn`
-  (`urn:li:activity:…`) attributes — the only stable selectors — and decoration is
+  (`urn:li:activity:…`) attributes, the only stable selectors, and decoration is
   idempotent because LinkedIn re-renders wipe inline styles.
-- Extending to other sites = one new adapter + a manifest `matches` entry.
+- Extending to other sites takes one new adapter and a manifest `matches` entry.
 
 ## Consequences
 
-- Long posts get partial analysis until expanded — accepted trade-off, surfaced in
+- Long posts get partial analysis until expanded. Accepted trade-off, surfaced in
   the UI (◐).
 - Selector churn breaks only one file, which is covered by fixture tests.

@@ -4,7 +4,7 @@
 
 Accepted, and since carried out: the extension now lives in its own repository
 (Slop Radar), with `extension/` promoted to the repository root. The decision below
-is what made that move a copy rather than surgery; paths named as `extension/…` are
+is what made that move a copy rather than surgery. Paths named as `extension/…` are
 now root-relative.
 
 ## Context
@@ -23,5 +23,5 @@ across the boundary in either direction.
 ## Consequences
 
 - Extraction later is `git subtree split --prefix=extension` (or a plain copy) plus
-  a new remote — no config untangling.
+  a new remote, with no config untangling.
 - Some config duplication with the root, accepted as the cost of a clean seam.

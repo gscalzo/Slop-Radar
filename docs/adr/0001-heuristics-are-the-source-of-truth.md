@@ -13,7 +13,7 @@ The extension must (a) tier each post green/yellow/red and (b) list the concrete
 tells *and where they occur* in a report modal. Two candidate engines:
 
 - **Deterministic heuristics** (em dashes, contrast templates, stock vocabulary,
-  emoji listicles, unicode-bold headers, engagement bait, staccato runs) — derived
+  emoji listicles, unicode-bold headers, engagement bait, staccato runs), taken
   from the "humanizer" catalogue of AI-writing tells.
 - **An LLM verdict.** Chrome's built-in Gemini Nano was considered first, but it is
   unavailable on many machines (multi-GB download, GPU requirements), cannot return
@@ -26,13 +26,13 @@ tells *and where they occur* in a report modal. Two candidate engines:
    base score (weight per 100 words → tier).
 2. The cloud judge is optional and provider-agnostic: any OpenAI-compatible
    `/chat/completions` endpoint (base URL + model + key are user config). It returns
-   a 0–1 likelihood plus **verbatim quotes**, which we locate back to offsets with a
-   string search — LLMs cannot be trusted with numeric offsets.
+   a 0 to 1 likelihood plus **verbatim quotes**, which we locate back to offsets with
+   a string search, because LLMs cannot be trusted with numeric offsets.
 3. The final tier is the rounded-up average of the heuristic tier and the judge tier,
    so the judge can move the verdict one step but never overrule an abstention.
 4. **Framing is "AI-tell density", never authorship.** Posts under 40 words or mostly
-   non-Latin text get no verdict at all: false accusations (non-native speakers,
-   professional writers) are the failure mode this product must avoid.
+   non-Latin text get no verdict at all. False accusations, of non-native speakers and
+   professional writers, are the failure mode this product must avoid.
 
 ## Consequences
 

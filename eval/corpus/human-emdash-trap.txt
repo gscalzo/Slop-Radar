@@ -1,0 +1,5 @@
+Unpopular opinion — most engineering "best practices" are just someone's preferences that survived long enough to get a name.
+
+Test coverage targets, branch naming conventions, commit message formats — I've watched teams argue about these for hours while shipping nothing. Meanwhile the thing that actually mattered, the deployment taking 40 minutes, went unexamined for a year.
+
+I'm not saying conventions are worthless. I'm saying we optimise the ones that are easy to argue about rather than the ones that are expensive to fix. Cheap disagreements crowd out expensive ones.

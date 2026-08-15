@@ -1,0 +1,10 @@
+Notes from running our first internal hack day, in case anyone's planning one:
+
+✅ Two days, not one. Day one is entirely setup and arguing about ideas.
+✅ Cross-team pairs only. The value was people meeting, not the projects.
+✅ No prizes. We tried prizes the first time and it made people conservative.
+❌ Don't demo to leadership. Demo to each other. Different energy entirely.
+
+Six of the fourteen projects shipped something to production within a month. The other eight were still worth doing.
+
+Happy to share the planning doc if useful.

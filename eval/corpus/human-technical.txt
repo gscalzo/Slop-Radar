@@ -1,0 +1,7 @@
+Spent most of yesterday chasing a bug where our p99 latency spiked to 2.4s but only between 14:00 and 15:00 UTC, and only on Tuesdays.
+
+Turned out a batch job in a completely different service was saturating the shared connection pool. The pool was sized at 20 in a config file nobody had touched since 2021.
+
+Bumped it to 60, latency back to 180ms. Three hours of my life for a one-line diff.
+
+The annoying part: our dashboards showed the symptom for six weeks. Nobody looked because it self-resolved every hour.

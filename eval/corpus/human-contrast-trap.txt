@@ -1,0 +1,7 @@
+Something I got wrong for most of my career: I thought code review was about catching bugs.
+
+It isn't about catching bugs — it's about spreading context. The bugs you catch in review are the cheap ones. The expensive ones need a test suite or a type system, not a human skimming a diff on a Friday afternoon.
+
+What review actually buys you is that two people now know why that module exists. When one of them leaves, the knowledge doesn't leave with them.
+
+We changed how we review once we understood that. Fewer comments about style, more questions about intent.

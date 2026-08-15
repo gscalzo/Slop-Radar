@@ -3,3 +3,4 @@ dist/
 coverage/
 .chrome-profile/
 slop-radar-*.zip
+eval/local/

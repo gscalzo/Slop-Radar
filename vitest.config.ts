@@ -26,6 +26,8 @@ export default defineConfig({
         "src/content/index.ts",
         "src/background/index.ts",
         "src/options/options.ts",
+        // Manual tool: calls a real endpoint, run by hand with npm run eval.
+        "src/eval/run.ts",
       ],
       thresholds: {
         lines: 80,

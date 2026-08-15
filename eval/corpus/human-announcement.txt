@@ -1,0 +1,5 @@
+After four years at Monzo I'm moving on at the end of March.
+
+I joined when the payments team was six people and left it at thirty-one. We took card processing in house, cut auth latency by about 40%, and I got to work with some genuinely brilliant engineers who made me much better at my job.
+
+Not sure what's next yet. Taking April off to walk the Pennine Way and think about it. If you're doing interesting things in payments infrastructure, I'd love to hear from you in May.

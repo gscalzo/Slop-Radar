@@ -1,0 +1,1 @@
+> With a little more effort, the page could detect which browser it’s in, and forge an inception bar for that browser.It’s just a proof of concept, focusing on one browser in one operating system. It would be interesting to see how well this could be done on iOS. The real host name is always shown at the top of the page, so it’s not going to be perfect.

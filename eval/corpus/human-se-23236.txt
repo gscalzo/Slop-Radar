@@ -1,0 +1,11 @@
+Fast, cheap, good. Pick two. This is the reality of project work. 
+
+Have a high-level goal-oriented conversation with the PM. Ask him why he has the 28-day deadline. Find out his business goals and try to figure out how to make him successful. Promising 28 days and delivering in 45 will not make him successful. Make the project manager into your ally and make yourself into his ally.
+
+(If his business goal is to prove you are an incompetent idiot, because he's been burned by project workers many times, he has a hard problem. It's not a problem you can solve for him. But you should still do your best to make his project successful even over his opposition.)
+
+Resist the temptation to whip out your detailed schedule to prove you can't make 28 days. Even if it's true, it won't help. People don't react well when you try to prove they're wrong. They do react well when you say "together let's make this work."
+
+Once you understand the PM's real needs, get his permission to share them with your team. Make sure everybody is working to meet those real needs.
+
+If fast (28 days) is legitimately immovable because of some business problem, then you and the PM can sacrifice either cheap (by spending more money or labor) or good (by dropping parts of the requirements, or by declaring schedule victory before you've completed the end-of-project punch list).

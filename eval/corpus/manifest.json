@@ -1,0 +1,834 @@
+{
+  "ai-c01-hiring-listicle.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 124
+  },
+  "ai-c02-remote-staccato.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 92
+  },
+  "ai-c03-burnout-anecdote.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 130
+  },
+  "ai-c04-ai-thought.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 115
+  },
+  "ai-c05-feedback-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 125
+  },
+  "ai-c06-failure-story.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 131
+  },
+  "ai-c07-networking-listicle.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 117
+  },
+  "ai-c08-promotion-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 129
+  },
+  "ai-c09-mentoring-thought.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 125
+  },
+  "ai-c10-imposter-staccato.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 90
+  },
+  "ai-c11-culture-thought.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 127
+  },
+  "ai-c12-career-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 144
+  },
+  "ai-c13-layoffs-thought.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 124
+  },
+  "ai-c14-meetings-listicle.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 104
+  },
+  "ai-c15-product-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 125
+  },
+  "ai-c16-vulnerability-anecdote.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 104
+  },
+  "ai-c17-juniors-thought.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 135
+  },
+  "ai-c18-strategy-staccato.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 103
+  },
+  "ai-c19-onboarding-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 130
+  },
+  "ai-c20-gratitude-listicle.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 112
+  },
+  "ai-c21-datadriven-thought.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 124
+  },
+  "ai-c22-firstjob-anecdote.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 128
+  },
+  "ai-c23-salary-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 130
+  },
+  "ai-c24-founder-staccato.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 107
+  },
+  "ai-c25-oncall-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 125
+  },
+  "ai-c26-diversity-thought.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 123
+  },
+  "ai-c27-estimates-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 127
+  },
+  "ai-c28-monday-listicle.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 120
+  },
+  "ai-c29-documentation-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 134
+  },
+  "ai-c30-linkedin-meta.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 125
+  },
+  "ai-c31-migration-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 134
+  },
+  "ai-c32-interview-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 129
+  },
+  "ai-c33-pricing-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 128
+  },
+  "ai-c34-testing-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 133
+  },
+  "ai-c35-remote-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 125
+  },
+  "ai-c36-incident-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 124
+  },
+  "ai-c37-scaling-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 119
+  },
+  "ai-c38-metrics-hard.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 125
+  },
+  "ai-listicle.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 105
+  },
+  "ai-opener.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 94
+  },
+  "ai-staccato.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 83
+  },
+  "ai-story.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 101
+  },
+  "ai-subtle.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 98
+  },
+  "ai-unicode.txt": {
+    "author": "claude-opus-5 (written for this corpus, not via the judged API)",
+    "created": "2026-08-15",
+    "licence": "generated for evaluation",
+    "source": "claude-opus-5",
+    "url": "",
+    "words": 84
+  },
+  "human-hn-10462060.txt": {
+    "author": "001sky",
+    "created": "2015-10-27T23:58:22Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=10462060",
+    "words": 115
+  },
+  "human-hn-10799187.txt": {
+    "author": "boyaka",
+    "created": "2015-12-27T23:58:40Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=10799187",
+    "words": 63
+  },
+  "human-hn-11585621.txt": {
+    "author": "crazy1van",
+    "created": "2016-04-27T23:59:38Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=11585621",
+    "words": 119
+  },
+  "human-hn-12177426.txt": {
+    "author": "ultramancool",
+    "created": "2016-07-27T23:58:04Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=12177426",
+    "words": 188
+  },
+  "human-hn-12177433.txt": {
+    "author": "avindroth",
+    "created": "2016-07-27T23:59:30Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=12177433",
+    "words": 106
+  },
+  "human-hn-12811588.txt": {
+    "author": "aaron-lebo",
+    "created": "2016-10-27T23:58:58Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=12811588",
+    "words": 96
+  },
+  "human-hn-13267368.txt": {
+    "author": "bogomipz",
+    "created": "2016-12-27T23:58:43Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=13267368",
+    "words": 63
+  },
+  "human-hn-14215876.txt": {
+    "author": "etcet",
+    "created": "2017-04-27T23:59:41Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=14215876",
+    "words": 91
+  },
+  "human-hn-14870875.txt": {
+    "author": "crispinb",
+    "created": "2017-07-27T23:59:58Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=14870875",
+    "words": 90
+  },
+  "human-hn-15573205.txt": {
+    "author": "abtinf",
+    "created": "2017-10-27T23:57:21Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=15573205",
+    "words": 163
+  },
+  "human-hn-16019193.txt": {
+    "author": "tedmiston",
+    "created": "2017-12-27T23:59:44Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=16019193",
+    "words": 102
+  },
+  "human-hn-16945329.txt": {
+    "author": "qntty",
+    "created": "2018-04-27T23:54:53Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=16945329",
+    "words": 142
+  },
+  "human-hn-17630523.txt": {
+    "author": "dorchadas",
+    "created": "2018-07-27T23:59:25Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=17630523",
+    "words": 115
+  },
+  "human-hn-18318365.txt": {
+    "author": "magila",
+    "created": "2018-10-27T23:58:26Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=18318365",
+    "words": 62
+  },
+  "human-hn-18773754.txt": {
+    "author": "dkhenry",
+    "created": "2018-12-27T23:58:18Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=18773754",
+    "words": 63
+  },
+  "human-hn-19768453.txt": {
+    "author": "steve_taylor",
+    "created": "2019-04-27T23:58:40Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=19768453",
+    "words": 69
+  },
+  "human-hn-20545008.txt": {
+    "author": "jaredklewis",
+    "created": "2019-07-27T23:58:49Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=20545008",
+    "words": 134
+  },
+  "human-hn-21373294.txt": {
+    "author": "redis_mlc",
+    "created": "2019-10-27T23:59:40Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=21373294",
+    "words": 65
+  },
+  "human-hn-21895959.txt": {
+    "author": "clairity",
+    "created": "2019-12-27T23:58:22Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=21895959",
+    "words": 60
+  },
+  "human-hn-21895964.txt": {
+    "author": "elfexec",
+    "created": "2019-12-27T23:59:39Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=21895964",
+    "words": 249
+  },
+  "human-hn-5619542.txt": {
+    "author": "Shinkei",
+    "created": "2013-04-27T23:59:49Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=5619542",
+    "words": 88
+  },
+  "human-hn-6114944.txt": {
+    "author": "dehora",
+    "created": "2013-07-27T23:58:35Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=6114944",
+    "words": 114
+  },
+  "human-hn-6624261.txt": {
+    "author": "adventured",
+    "created": "2013-10-27T23:58:48Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=6624261",
+    "words": 179
+  },
+  "human-hn-6973209.txt": {
+    "author": "eurleif",
+    "created": "2013-12-27T23:59:09Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=6973209",
+    "words": 62
+  },
+  "human-hn-7657523.txt": {
+    "author": "leaveyou",
+    "created": "2014-04-27T23:58:55Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=7657523",
+    "words": 68
+  },
+  "human-hn-8094419.txt": {
+    "author": "fnordfnordfnord",
+    "created": "2014-07-27T23:59:04Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=8094419",
+    "words": 249
+  },
+  "human-hn-8518851.txt": {
+    "author": "floatrock",
+    "created": "2014-10-27T23:59:39Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=8518851",
+    "words": 172
+  },
+  "human-hn-8804481.txt": {
+    "author": "xux",
+    "created": "2014-12-27T23:57:43Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=8804481",
+    "words": 65
+  },
+  "human-hn-9449843.txt": {
+    "author": "Nadya",
+    "created": "2015-04-27T23:58:08Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=9449843",
+    "words": 152
+  },
+  "human-hn-9958781.txt": {
+    "author": "rgbrenner",
+    "created": "2015-07-27T23:59:22Z",
+    "licence": "user content, quoted for evaluation",
+    "source": "news.ycombinator.com",
+    "url": "https://news.ycombinator.com/item?id=9958781",
+    "words": 67
+  },
+  "human-se-101612.txt": {
+    "author": "Kate Gregory",
+    "created": "2017-10-27T17:37:25.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/101612",
+    "words": 147
+  },
+  "human-se-104483.txt": {
+    "author": "Neo",
+    "created": "2017-12-27T15:55:12.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/104483",
+    "words": 164
+  },
+  "human-se-111353.txt": {
+    "author": "gnasher729",
+    "created": "2018-04-27T19:58:57.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/111353",
+    "words": 211
+  },
+  "human-se-111358.txt": {
+    "author": "Ian Jacobs",
+    "created": "2018-04-27T23:53:51.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/111358",
+    "words": 169
+  },
+  "human-se-11401.txt": {
+    "author": "Jim G.",
+    "created": "2013-04-27T23:37:09.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/11401",
+    "words": 158
+  },
+  "human-se-116597.txt": {
+    "author": "jcmack",
+    "created": "2018-07-27T23:35:22.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/116597",
+    "words": 106
+  },
+  "human-se-121654.txt": {
+    "author": "PeteCon",
+    "created": "2018-10-27T21:24:39.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/121654",
+    "words": 79
+  },
+  "human-se-125418.txt": {
+    "author": "Nathan",
+    "created": "2018-12-27T21:21:23.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/125418",
+    "words": 132
+  },
+  "human-se-13445.txt": {
+    "author": "Justin Cave",
+    "created": "2013-07-27T16:52:13.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/13445",
+    "words": 181
+  },
+  "human-se-135645.txt": {
+    "author": "Justin",
+    "created": "2019-04-27T18:42:25.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/135645",
+    "words": 128
+  },
+  "human-se-141171.txt": {
+    "author": "Keith",
+    "created": "2019-07-27T18:51:57.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/141171",
+    "words": 110
+  },
+  "human-se-147139.txt": {
+    "author": "paul23",
+    "created": "2019-10-27T23:46:58.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/147139",
+    "words": 216
+  },
+  "human-se-150434.txt": {
+    "author": "bethlakshmi",
+    "created": "2019-12-27T20:17:43.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/150434",
+    "words": 163
+  },
+  "human-se-150438.txt": {
+    "author": "user77653",
+    "created": "2019-12-27T23:34:13.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/150438",
+    "words": 72
+  },
+  "human-se-15326.txt": {
+    "author": "John Oglesby",
+    "created": "2013-10-27T21:50:53.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/15326",
+    "words": 107
+  },
+  "human-se-17682.txt": {
+    "author": "Wesley Long",
+    "created": "2013-12-27T20:10:24.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/17682",
+    "words": 160
+  },
+  "human-se-23236.txt": {
+    "author": "O. Jones",
+    "created": "2014-04-27T14:11:07.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/23236",
+    "words": 238
+  },
+  "human-se-31367.txt": {
+    "author": "Vietnhi Phuvan",
+    "created": "2014-07-27T23:10:54.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/31367",
+    "words": 134
+  },
+  "human-se-35454.txt": {
+    "author": "user29019",
+    "created": "2014-10-27T23:03:12.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/35454",
+    "words": 98
+  },
+  "human-se-38852.txt": {
+    "author": "Peter K&#228;mpf",
+    "created": "2014-12-27T10:56:46.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/38852",
+    "words": 230
+  },
+  "human-se-44804.txt": {
+    "author": "Kevin Bedell",
+    "created": "2015-04-27T22:50:20.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/44804",
+    "words": 116
+  },
+  "human-se-50258.txt": {
+    "author": "I don&#39;t use this profile anymo",
+    "created": "2015-07-27T20:42:03.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/50258",
+    "words": 145
+  },
+  "human-se-56676.txt": {
+    "author": "SiCN",
+    "created": "2015-10-27T23:07:49.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/56676",
+    "words": 124
+  },
+  "human-se-59937.txt": {
+    "author": "gnasher729",
+    "created": "2015-12-27T21:43:17.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/59937",
+    "words": 128
+  },
+  "human-se-66076.txt": {
+    "author": "MealyPotatoes",
+    "created": "2016-04-27T20:27:17.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/66076",
+    "words": 71
+  },
+  "human-se-72184.txt": {
+    "author": "Basil Bourque",
+    "created": "2016-07-27T21:08:11.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/72184",
+    "words": 205
+  },
+  "human-se-78591.txt": {
+    "author": "Arlie Stephens",
+    "created": "2016-10-27T22:23:20.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/78591",
+    "words": 134
+  },
+  "human-se-82113.txt": {
+    "author": "Joe Strazzere",
+    "created": "2016-12-27T21:54:35.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/82113",
+    "words": 112
+  },
+  "human-se-90020.txt": {
+    "author": "Ian Jacobs",
+    "created": "2017-04-27T22:54:52.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/90020",
+    "words": 218
+  },
+  "human-se-96067.txt": {
+    "author": "joel.cass",
+    "created": "2017-07-27T23:06:47.000Z",
+    "licence": "CC BY-SA",
+    "source": "workplace.stackexchange.com",
+    "url": "https://workplace.stackexchange.com/a/96067",
+    "words": 161
+  }
+}

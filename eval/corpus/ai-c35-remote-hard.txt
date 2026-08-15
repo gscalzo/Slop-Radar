@@ -1,0 +1,7 @@
+Four years of hiring across eight time zones, and the thing that mattered most was not tooling.
+
+It was writing an actual rule about response time and then defending it. Ours was: nothing is expected within the working day of another zone, and anything genuinely urgent goes through a paging channel with a named on-call.
+
+Without that rule, people invent their own, and the invented ones are always stricter. Someone in Europe sees a message from San Francisco at 7pm and answers, because the alternative is being the person who didn't. Within a few months the effective policy is that everyone is available always, and nobody decided it.
+
+Async doesn't happen because you bought the tools. It happens because someone specified what waiting looks like.

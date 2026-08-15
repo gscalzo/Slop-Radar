@@ -1,0 +1,9 @@
+Everyone is hiring senior engineers. Almost nobody is training junior ones.
+
+This is not a talent shortage. It is a coordination failure. Every company individually decides that training is too expensive and someone else's problem, and collectively the industry stops producing the seniors it plans to hire in five years.
+
+We took ten juniors last year. It cost us real senior time — roughly a day a week each for the first three months. Two didn't work out. Eight are now shipping independently, and three are better than people we hired at mid-level.
+
+The maths works. It just doesn't work inside a single quarter, which is the only unit most companies can think in.
+
+If you can afford to train, train. The people you'll want to hire in 2029 are being turned away right now.

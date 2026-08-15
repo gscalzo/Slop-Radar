@@ -10,6 +10,9 @@
  *   SLOP_RADAR_API_KEY=sk-… npm run eval -- gpt-5.6-luna,gpt-5.6-terra
  */
 import { build } from "esbuild";
+import { loadEnv } from "./env.mjs";
+
+loadEnv();
 
 const OUT = "dist/eval.mjs";
 

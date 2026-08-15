@@ -4,3 +4,4 @@ coverage/
 .chrome-profile/
 slop-radar-*.zip
 eval/local/
+.env

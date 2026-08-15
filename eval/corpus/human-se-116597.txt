@@ -1,0 +1,7 @@
+Software engineering is harder to break into than some people would make it seem. With no degree, no formal education, and no previous work history in software engineering, your first job will be the hardest, but once you have the work experience no one will worry about your educational background. It's easy to get discouraged, but you have to just push through it. 
+
+I suggest that you look at these resources:
+ - https://www.indiehackers.com/
+ - https://www.freecodecamp.org/
+
+There is no silver bullet to getting hired as a software engineer. Even with a degree, there is so much variation between hiring managers that you get rejected a lot too.

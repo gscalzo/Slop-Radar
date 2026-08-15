@@ -1,0 +1,1 @@
+This is an interesting read, thanks. However I do not understand the opening sentence:"Pointers in the C language are more abstract than pointers in the hardware, and the compiler may surprise developers that think that pointers in C work in the same way as pointers in the CPU."What are pointers in the hardware? I am not sure what is being said. Any ideas?

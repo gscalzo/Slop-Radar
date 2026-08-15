@@ -1,0 +1,9 @@
+The org chart question I wish someone had asked me earlier: which of these teams can ship without talking to another team?
+
+We had nine teams and roughly forty cross-team dependencies for anything meaningful. Every planning cycle was a negotiation, and every slip propagated. The instinct was to fix it with better planning — more roadmap alignment, a dependency tracker, a weekly sync.
+
+None of that helped, because the problem wasn't coordination quality. It was coordination volume.
+
+Redrawing four of the teams around end-to-end user journeys cut dependencies by about two thirds. Some duplication appeared, which we accepted; the duplicated work was cheaper than the meetings it replaced.
+
+Structure is a lever on communication cost. Planning process is not.

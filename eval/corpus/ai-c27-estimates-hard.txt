@@ -1,0 +1,7 @@
+After a decade of arguing about estimates I've landed somewhere unfashionable: the number matters less than the conversation that produces it.
+
+Teams that estimate badly usually aren't bad at arithmetic. They're missing information, and the estimate is where that shows up. "Three days or three weeks, depending" is not a failure of estimation — it's a discovered dependency, surfaced early, in the only forum where anyone was going to ask.
+
+I stopped chasing accuracy and started paying attention to spread. A wide range means we don't understand the problem yet, and the useful response is a spike, not pressure to narrow the number.
+
+The teams I trust most give me wide ranges early and narrow ones later. The ones I worry about give me confident numbers immediately.

@@ -1,0 +1,9 @@
+A trap I fell into running a growth team: optimising a metric that was measuring our own activity.
+
+Activation rate looked like a user outcome. It was defined as completing onboarding, and onboarding was something we controlled entirely. Every quarter we made onboarding shorter, activation went up, and retention at day 90 didn't move at all.
+
+We'd built a machine for improving a number by changing its denominator.
+
+The fix was picking a metric we couldn't directly manipulate — week-four retention for accounts that had done a specific job with the product — and accepting that it moved slowly and noisily.
+
+If you can improve a metric by editing your own product's definition of success, it is not measuring the user. It is measuring you.

@@ -24,7 +24,7 @@ const JUDGING_PREAMBLE = [
   "authorship oracle: humans use these patterns too, so weigh density and",
   "combination, and be conservative with text that has genuine specifics or",
   "personal texture. Calibrate likelihood: below 0.35 reads mostly human;",
-  "0.35–0.7 noticeably AI-patterned; above 0.7 dense and formulaic.",
+  "0.35–0.6 noticeably AI-patterned; above 0.6 dense and formulaic.",
   "\n\n--- DETECTION RUBRIC ---\n",
 ].join(" ");
 

@@ -12,6 +12,14 @@ describe("judgeTier", () => {
     expect(judgeTier(0.5)).toBe("yellow");
     expect(judgeTier(0.9)).toBe("red");
   });
+
+  it("puts the boundaries where the evaluation put them (ADR 0012)", () => {
+    expect(judgeTier(0.34)).toBe("green");
+    expect(judgeTier(0.35)).toBe("yellow");
+    // 0.58 was the highest any human sample scored: it must stay out of red.
+    expect(judgeTier(0.58)).toBe("yellow");
+    expect(judgeTier(0.6)).toBe("red");
+  });
 });
 
 describe("combine", () => {

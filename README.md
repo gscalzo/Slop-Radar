@@ -127,11 +127,11 @@ Extension → *Options*:
 - **Model** — default **`gpt-5.6-luna`**, OpenAI's fast/affordable tier built for
   high-volume classification. Alternatives (API prices per 1M tokens, August 2026):
 
-  | Model | Price (in / out) | When |
-  | --- | --- | --- |
-  | `gpt-5.6-luna` | $1.00 / $6.00 | default — fast, cheap, capable |
-  | `gpt-5.6-terra` | $2.50 / $15.00 | stronger judgment, moderate cost |
-  | `gpt-5.4-nano` | $0.20 / $1.25 | ultra-budget, high-volume |
+  | Model | Price (in / out) | Measured AUC | When |
+  | --- | --- | --- | --- |
+  | `gpt-5.6-luna` | $1.00 / $6.00 | **0.870** | default — nothing tested beat it |
+  | `gpt-5.6-terra` | $2.50 / $15.00 | 0.857 | 2.5x the cost, no better ([ADR 0012](./docs/adr/0012-calibration-from-measurement.md)) |
+  | `gpt-5.4-nano` | $0.20 / $1.25 | untested | ultra-budget, high-volume |
 
 - **API key** — stored in extension storage on this machine only.
 

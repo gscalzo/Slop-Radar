@@ -1,0 +1,9 @@
+We measured how long it took new engineers to merge their first change. It was eleven days.
+
+Most of that wasn't learning the codebase. It was access. Waiting on a VPN ticket, then a repo permission, then a staging credential that required someone on holiday to approve.
+
+We built a checklist that ran on the offer acceptance rather than the start date, and moved every approval to a single owner. First merge dropped to under two days.
+
+The interesting part was the secondary effect. People who shipped something in week one asked more questions in week two. The ones who spent a fortnight waiting had already learned that the way to get things done here was to sit quietly and wait for someone else.
+
+Onboarding teaches behaviour, not just process.

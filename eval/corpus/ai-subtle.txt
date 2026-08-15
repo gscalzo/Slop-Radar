@@ -1,0 +1,9 @@
+Something I've been reflecting on after three years of managing remote teams.
+
+The hardest part was never the coordination. Tools solved that. The hardest part was the loss of ambient information — the things you absorb without anyone deciding to tell you.
+
+Someone sighing at their desk. A conversation you half-overhear. The mood of a room on a Monday.
+
+Remote work made every piece of information intentional. And intentional information is filtered information.
+
+So we started running short unstructured calls with no agenda. Not stand-ups. Just presence. It helped more than any process change we made that year.

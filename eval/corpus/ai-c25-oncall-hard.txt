@@ -1,0 +1,9 @@
+We changed one thing about our on-call rota and attrition on the platform team went to zero for eighteen months.
+
+The change was not fewer pages, though that came later. It was that the person who was paged at 3am was given the following day off, automatically, without asking, and their work was reassigned by the rota tool rather than by them.
+
+Before that, people took the day off in theory and answered Slack all afternoon in practice, because asking someone else to pick up your tickets is a social cost most people won't pay repeatedly.
+
+Removing the negotiation was the entire intervention. The policy had always existed. Nobody used it, because using it required a favour.
+
+Defaults do the work that policies only describe.

@@ -1,0 +1,1 @@
+>>I don&#x27;t get what Go has that rust hasn&#x27;t for a "better c"<<Go has a stable version. Go has a sane syntax and especially a sane approach to concurrency. Go is so simple you can learn it in less than a week. Go is already proven in several significant projects and having several recognized names (and unofficially a big brand behind it) helps with credibility. And so on.

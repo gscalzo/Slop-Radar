@@ -1,0 +1,5 @@
+I'd not list it as a skill, any more than I'd list 'encyclopaedia reading' or 'dictionary lookups'. It is something you probably use every day - if relevant to a given field, of course - but it's almost certainly assumed that you'll draw from appropriate sources.
+
+That said, if you are an active StackExchange member, participating in answering and moderation, as well as just browsing and asking questions - it could be of benefit, but I'd think of it more as experience, or even its own separate small sub-section. 
+
+If I was reviewing a CV, I'd absolutely consider non-trivial SE activity to be relevant evidence of skills, especially if the experience was relevant to the job - e.g. StackOverflow for a programmer, or just about any mod role with regards to people skills. That said, I'm on SE already so I may be biased ;)

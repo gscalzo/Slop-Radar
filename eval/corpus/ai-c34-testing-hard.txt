@@ -1,0 +1,7 @@
+An argument I've changed my mind on: coverage targets.
+
+I used to think 80% was arbitrary and gameable, which it is. What I missed is that the number wasn't ever the point — the conversation triggered when someone can't hit it is.
+
+On our team, a PR that drops coverage doesn't get blocked. It gets a comment asking what would need to be true to test this. About a third of the time the answer is "nothing, it's config" and we move on. The other two thirds surface a design problem: a function doing three things, a dependency that can't be substituted, logic buried in a framework callback.
+
+The metric is a bad goal and a decent smoke alarm. I stopped arguing about the number and started reading what it was pointing at.

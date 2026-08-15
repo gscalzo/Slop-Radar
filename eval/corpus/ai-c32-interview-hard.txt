@@ -1,0 +1,9 @@
+I've stopped asking candidates about their biggest weakness. The answers were uniformly rehearsed and told me nothing.
+
+What I ask now: describe a decision you made that you'd make differently today, and what specifically changed your mind.
+
+The useful signal isn't the decision. It's whether the person can name the mechanism of their own updating — new information, a consequence they hadn't modelled, someone who disagreed and turned out to be right.
+
+People who can't answer tend to describe changes in circumstance rather than changes in understanding. That's not disqualifying, but it correlates with how they handle being wrong later, which is most of what working with someone consists of.
+
+It's also hard to prepare for, which at this point is most of what I want from a question.

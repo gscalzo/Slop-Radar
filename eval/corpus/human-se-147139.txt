@@ -1,0 +1,15 @@
+While I won't answer the original problem directly I wish to tackle something tangent to this. And I feel it is important enough to warrant an answer and not a comment.
+
+From a comment (and the post) it is established that GPL'ed code is modified and distributed, without distributing also the modifications:
+
+ 
+
+The free software foundation (writers and maintainers of the GPL license) has a specific "faq" for this
+
+ 
+
+Now you are hence violating the license, and since it is the linux kernel it is also "quite easy" to contact the original maintainers.
+
+This creates a very vulnerable point for your company. Even if you manage to settle something with this employee, there will be another one after this. So you take the risk of each disgruntled employee to report it to the copyright holders.
+
+I think a single employer is less of a problem than such a violation. I'd strongly urge you as company to either move away from using copyleft-licenses, or start decoupling the code from the GPL code and only work with lesser-gpl libraries (and don't modify them, use them). Or do something which google does with android: release to the public the modifications, but build upon those a personal layer; and make the profit not from the software but the service provided.

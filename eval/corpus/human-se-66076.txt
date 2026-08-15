@@ -1,0 +1,7 @@
+I can see some value in sending these email blasts once a week, especially if it meets a diversity requirement. However, make sure you send in such a way that people can easily manage messages using rules. For example:
+
+Send from a dedicated email address such as jobs@university.edu. This will prevent your other email addresses from getting junked. 
+
+Prefix with a specific qualifier like "[Job] HVAC Technician"
+
+I would do both.

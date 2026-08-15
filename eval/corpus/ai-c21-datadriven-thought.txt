@@ -1,0 +1,11 @@
+"Data-driven" has quietly become an excuse rather than a discipline.
+
+I've watched teams run experiments they were never going to act on, instrument features nobody was measuring, and produce dashboards that get opened once a quarter by someone preparing a slide.
+
+The question that separates real measurement from theatre is simple: what decision changes based on this number, and who makes it?
+
+If the answer is "it depends" or "leadership likes to see it," you are not being data-driven. You are being data-decorated.
+
+Good measurement is uncomfortable because it commits you in advance. It says: if the result is below X, we stop.
+
+Most organisations do not want to be committed in advance. They want the credibility of evidence without the constraint of it.

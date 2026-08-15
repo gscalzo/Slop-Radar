@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Slop Radar",
+  "version": "0.1.0",
+  "description": "Flags AI-patterned writing in your LinkedIn feed, with model-backed analysis. A radar, not an authorship oracle.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.linkedin.com/feed*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_page": "options.html",
+  "commands": {
+    "expand-truncated": {
+      "suggested_key": {
+        "default": "Alt+Shift+E"
+      },
+      "description": "Expand every \u201c\u2026see more\u201d in the feed so full text can be analysed"
+    }
+  }
+}

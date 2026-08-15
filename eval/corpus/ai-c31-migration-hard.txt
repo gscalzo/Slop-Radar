@@ -1,0 +1,7 @@
+We moved 340 services off a shared database over about two years. Some notes, since I get asked.
+
+The technical work was the easy half. The hard half was that the shared database was also a shared assumption: dozens of teams had built reporting, alerting and one-off scripts on tables they didn't own, and none of that appeared in any dependency graph.
+
+What found them was breaking things deliberately in a low-traffic window and watching who complained. Not elegant, but three afternoons of that surfaced more hidden coupling than two months of static analysis.
+
+The other thing I'd repeat: we kept a public list of remaining services and who owned each. Not a dashboard — a list, in a channel, updated by hand. Visibility did more for the pace than any amount of tooling.

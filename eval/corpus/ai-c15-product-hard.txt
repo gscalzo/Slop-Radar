@@ -1,0 +1,9 @@
+A thing that surprised me about running a support function: the volume of tickets is a lagging indicator of product decisions made nine months earlier.
+
+We could predict the next quarter's contact rate from the previous quarter's release notes with reasonable accuracy. Every ambiguous button, every silent failure, every settings page that needed a paragraph of explanation showed up eventually as human hours.
+
+Support was being measured on response time. Nobody was measuring the thing generating the tickets.
+
+We started putting the top ten contact drivers in front of the product team monthly, framed as cost. Not complaints — cost. Hours, salaries, a number.
+
+Contact rate fell 22% over three quarters, entirely from product changes. The support team barely changed anything about how they worked.

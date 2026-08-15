@@ -1,0 +1,7 @@
+We stopped writing blameless postmortems and started writing boring ones, and they got read for the first time.
+
+The blameless framing was fine in principle but produced documents optimised for not upsetting anyone, which meant vague causes and action items like "improve monitoring". Nobody could argue with them and nobody did anything with them.
+
+What changed: a strict template with a timeline in UTC, the specific query or config that did it, and every action item assigned to one named person with a date. Facts are not accusations. "The migration ran without a lock" is a fact about a migration.
+
+Attendance at review went up, which I didn't predict. It turns out people avoid meetings about feelings and turn up to meetings about mechanisms.

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+.chrome-profile/
+slop-radar-*.zip
+eval/local/
+.env

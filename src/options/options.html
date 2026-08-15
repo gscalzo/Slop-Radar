@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Slop Radar — Options</title>
+    <style>
+      body { font: 14px/1.5 sans-serif; max-width: 560px; margin: 32px auto; color: #222; }
+      label { display: block; margin: 14px 0 4px; font-weight: 600; }
+      input[type="text"], input[type="password"], textarea { width: 100%; padding: 6px 8px; box-sizing: border-box; }
+      textarea { font-family: monospace; font-size: 12px; }
+      .hint { color: #666; font-size: 12px; margin-top: 2px; }
+      .privacy { background: #fff6e0; border: 1px solid #e8d59a; border-radius: 6px; padding: 10px 12px; margin: 16px 0; }
+      button { margin-top: 16px; padding: 8px 20px; }
+      #status { margin-left: 12px; color: #1a7f37; }
+    </style>
+  </head>
+  <body>
+    <h1>Slop Radar</h1>
+    <p>
+      Verdicts come from the model you configure below — deterministic patterns alone can't
+      catch everything. The local pattern engine pinpoints tells at exact offsets and stands
+      in (marked ≈) until a model is set up.
+    </p>
+    <label><input type="checkbox" id="checkComments" /> Also check comments</label>
+    <p class="hint">Comments shorter than 20 words get no verdict.</p>
+    <div class="privacy">
+      <strong>Privacy:</strong> with model analysis enabled, the text of posts in your feed is
+      sent to the API endpoint you configure below. Disable it to keep everything on-device
+      (pattern-only estimates).
+    </div>
+    <label><input type="checkbox" id="enabled" /> Enable model analysis</label>
+    <label for="baseUrl">API base URL</label>
+    <input type="text" id="baseUrl" placeholder="https://api.openai.com/v1" />
+    <p class="hint">Any OpenAI-compatible endpoint (OpenAI, OpenRouter, a local proxy…).</p>
+    <label for="model">Model</label>
+    <input type="text" id="model" placeholder="gpt-5.6-luna" />
+    <label for="apiKey">API key</label>
+    <input type="password" id="apiKey" autocomplete="off" />
+    <p class="hint">Stored in extension storage on this machine. Anyone with access to this browser profile can read it.</p>
+    <button id="testConnection" type="button">Test connection</button>
+    <p class="hint">Sends one sample post to the endpoint above and reports the reply — or the exact error, if it fails. Grants the host permission if it is missing.</p>
+    <label for="skillText">Humanizer skill (judging rubric)</label>
+    <textarea id="skillText" rows="14" spellcheck="false"></textarea>
+    <p class="hint">Editing this updates the instructions sent to the model; leaving it unchanged keeps tracking the bundled default.</p>
+    <p class="hint">The rubric is the humanizer skill from <a href="https://github.com/blader/humanizer" target="_blank">blader/humanizer</a> (MIT). Click <strong>Update skill from GitHub</strong> to download the latest skill and distill it into a compact rubric with the distillation model.</p>
+    <label for="distillModel">Distillation model</label>
+    <input type="text" id="distillModel" placeholder="gpt-5.6-terra" />
+    <p class="hint">Stronger model used once per skill update to extract the detection signals from the full skill.</p>
+    <button id="resetSkill" type="button">Reset to default</button>
+    <button id="updateSkill" type="button">Update skill from GitHub</button>
+    <button id="save">Save</button><span id="status"></span>
+    <script src="options.js"></script>
+  </body>
+</html>

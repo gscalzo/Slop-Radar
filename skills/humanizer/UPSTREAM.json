@@ -1,0 +1,10 @@
+{
+  "repo": "blader/humanizer",
+  "url": "https://github.com/blader/humanizer",
+  "rawUrl": "https://raw.githubusercontent.com/blader/humanizer/main/SKILL.md",
+  "commit": "523374dee72d67c7b2b5f858ea0094ffda49c3ac",
+  "version": "2.9.1",
+  "license": "MIT",
+  "fetchedAt": "2026-08-11",
+  "note": "SKILL.md is vendored verbatim from the upstream repository. Refresh by re-copying from rawUrl and updating this file; users can also pull the latest at runtime via Options → Update skill from GitHub."
+}

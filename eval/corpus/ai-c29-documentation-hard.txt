@@ -1,0 +1,9 @@
+Our documentation problem turned out to be an incentive problem.
+
+Writing docs was everyone's responsibility, which meant it was nobody's, and the people best placed to write them — the ones who had just solved something hard — were also the ones under most pressure to move to the next thing.
+
+What worked was narrowing the ask. Instead of "keep the docs updated", the rule became: if you answer the same question twice in Slack, the third answer is a link, and you write the page first.
+
+Twice is a low enough bar that people notice it happening. It also guarantees the page answers a question someone actually asked, in the words they asked it in, which is more than most documentation efforts achieve.
+
+We didn't get comprehensive docs. We got the useful 15%.

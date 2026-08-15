@@ -32,7 +32,6 @@ export async function distillSkill(
 ): Promise<string> {
   const body = {
     model: config.distillModel,
-    temperature: 0,
     messages: [
       { role: "system", content: DISTILL_SYSTEM_PROMPT },
       { role: "user", content: skillMarkdown },

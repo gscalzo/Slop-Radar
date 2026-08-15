@@ -51,7 +51,6 @@ export function createOpenAiCompatibleJudge(
 ): Judge {
   const body = (text: string): unknown => ({
     model: config.model,
-    temperature: 0,
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: buildSystemPrompt(config) },

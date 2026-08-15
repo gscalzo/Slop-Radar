@@ -6,7 +6,7 @@
 import { linkedInAdapter } from "../adapters/linkedin";
 import type { FeedItem } from "../adapters/types";
 import { loadConfig } from "../config";
-import { createLogger, formatCounts } from "../debug";
+import { createLog, distinct, formatCounts } from "../debug";
 import { analyze } from "../core/analyze";
 import { hashText } from "../core/hash";
 import { scoreText } from "../core/score";
@@ -22,7 +22,9 @@ import { buildReport } from "./report";
 // Comments are short by nature; see ADR 0004 for the lower abstain floor.
 const COMMENT_MIN_WORDS = 20;
 
-const log = createLogger(localStorage, console.log.bind(console));
+const log = createLog(localStorage, console.log.bind(console));
+// One post failing means they all are; say it once, not once per card.
+const problemOnce = distinct((message) => log.problem(message));
 
 let checkComments = true;
 
@@ -67,16 +69,17 @@ function decorate(state: ItemState): void {
 // looked exactly like a working one: pattern-only badges and no explanation.
 function applyJudgeResponse(state: ItemState, response: JudgeResponseMessage | undefined): void {
   if (response === undefined) {
-    log(`judge: no response for ${state.item.id} (service worker asleep or erroring?)`);
+    problemOnce("no reply from the service worker — check its console for errors");
     return;
   }
   if (!response.ok) {
-    log(`judge REFUSED for ${state.item.id}: ${response.reason}`);
+    log.detail(`judge refused for ${state.item.id}: ${response.reason}`);
+    problemOnce(`no model verdicts: ${response.reason}`);
     return;
   }
   state.judge = response.result;
   state.verdict = combine(state.verdict.heuristic, response.result);
-  log(
+  log.detail(
     `judge ok for ${state.item.id}: likelihood ${response.result.likelihood} → ${state.verdict.tier}`,
   );
   decorate(state);
@@ -85,7 +88,7 @@ function applyJudgeResponse(state: ItemState, response: JudgeResponseMessage | u
 function requestJudgement(state: ItemState): void {
   if (state.judgeRequested || state.verdict.abstain) return;
   state.judgeRequested = true;
-  log(`judge: requesting for ${state.item.id} (${state.verdict.heuristic.words} words)`);
+  log.detail(`judge: requesting for ${state.item.id} (${state.verdict.heuristic.words} words)`);
   const message: JudgeRequestMessage = {
     type: "aitm-judge",
     text: state.item.text,
@@ -189,7 +192,7 @@ function shutdown(): void {
   mutations?.disconnect();
   viewport.disconnect();
   expandButton.remove();
-  log("extension was reloaded — refresh this page to resume");
+  log.problem("extension was reloaded — refresh this page to resume");
 }
 
 function scan(): void {
@@ -216,7 +219,7 @@ function logScan(items: FeedItem[]): void {
   const fingerprint = JSON.stringify(summary);
   if (fingerprint === lastLogged) return;
   lastLogged = fingerprint;
-  log(`scan ${fingerprint}`);
+  log.detail(`scan ${fingerprint}`);
   // Nothing matched: the page is either not the feed or LinkedIn renamed its
   // markup. The census says which, naming the exact selector that went stale.
   if (items.length === 0) logCensus();
@@ -224,8 +227,8 @@ function logScan(items: FeedItem[]): void {
 
 function logCensus(): void {
   const { selectors, idAttributes } = linkedInAdapter.diagnose(document);
-  log(`no items — selectors: ${formatCounts(selectors)}`);
-  log(`no items — id attributes: ${formatCounts(idAttributes)}`);
+  log.problem(`no items — selectors: ${formatCounts(selectors)}`);
+  log.problem(`no items — id attributes: ${formatCounts(idAttributes)}`);
 }
 
 function debounce(fn: () => void, ms: number): () => void {
@@ -237,7 +240,7 @@ function debounce(fn: () => void, ms: number): () => void {
 }
 
 async function boot(): Promise<void> {
-  log(`booted on ${location.href} — silence with localStorage.slopRadarDebug = "off"`);
+  log.detail(`booted on ${location.href}`);
   try {
     checkComments = (await loadConfig()).checkComments;
   } catch {

@@ -142,6 +142,30 @@ stays on-device as pattern-only estimates. Nothing is ever sent anywhere else.
 Cost stays bounded: only items that enter the viewport are analysed, and verdicts are
 cached per post/comment URN.
 
+## When something looks wrong
+
+**No verdicts on any post.** Options → **Test connection** sends one sample post
+and reports the reply, or the exact error, granting the host permission if it is
+missing. That permission is the usual culprit: it is optional and only requested
+when you press *Save*.
+
+**No badges at all.** The page console always prints why. If it says
+`no items — selectors: …`, LinkedIn changed its markup: the census names the
+anchor that stopped matching, and `scripts/dump-feed.js` (paste into the console)
+captures the whole feed as an outline to rewrite `adapters/linkedin.ts` against.
+See [ADR 0011](./docs/adr/0011-sdui-anchors-and-drift.md).
+
+**Console noise.** Only problems are printed by default. For the full trace —
+every scan, every judge request and verdict — set `localStorage.slopRadarDebug =
+"on"` in the page console. Everything is prefixed `[slop-radar]`, so the console
+filter isolates it. The service worker logs to its own console:
+`chrome://extensions` → Slop Radar → **service worker**, where the model, base
+URL and each failure are recorded (never the key).
+
+**`Extension context invalidated`.** Reloading the extension orphans the content
+script in tabs that are already open. Refresh the tab; the orphan stops itself
+and says so.
+
 ## Quality gates
 
 `npm run check` is the gate: ESLint (cyclomatic complexity ≤ 5 enforced), strict
@@ -159,11 +183,13 @@ skills/         the humanizer skill — vendored from blader/humanizer (MIT),
 src/core        detectors, density scoring, quote location — pure, fully tested
 src/judge       OpenAI-compatible judge client (the primary engine)
 src/adapters    SiteAdapter interface + the LinkedIn adapter — the ONLY file that
-                knows LinkedIn's DOM (posts and comments, urn:li anchors)
+                knows LinkedIn's DOM (posts, comments, and the census that
+                reports when its anchors stop matching)
 src/content     border/badge decoration, report modal, orchestrator glue
 src/background  service worker: owns the API key, caches verdicts
 src/options     options page
-scripts         install.sh (build + load into a browser), package.sh (store zip)
+scripts         install.sh (build + load into a browser), package.sh (store zip),
+                dump-feed.js / probe-*.js (console probes for markup drift)
 ```
 
 Supporting another site with text blocks means one new `SiteAdapter` and a manifest

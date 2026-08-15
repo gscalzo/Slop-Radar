@@ -1,27 +1,57 @@
 import { describe, expect, it, vi } from "vitest";
-import { createLogger, debugEnabled, formatCounts } from "./debug";
+import { createLog, distinct, formatCounts, verboseEnabled } from "./debug";
 
 function storage(value: string | null): Pick<Storage, "getItem"> {
   return { getItem: () => value };
 }
 
-describe("debugEnabled", () => {
-  it("is on when nothing is stored", () => {
-    expect(debugEnabled(storage(null))).toBe(true);
+describe("verboseEnabled", () => {
+  it("is off unless explicitly switched on", () => {
+    expect(verboseEnabled(storage(null))).toBe(false);
+    expect(verboseEnabled(storage("off"))).toBe(false);
+    expect(verboseEnabled(storage("yes"))).toBe(false);
+    expect(verboseEnabled(storage("on"))).toBe(true);
   });
 
-  it("is off only for the exact opt-out value", () => {
-    expect(debugEnabled(storage("off"))).toBe(false);
-    expect(debugEnabled(storage("on"))).toBe(true);
-  });
-
-  it("stays on when storage throws", () => {
+  it("stays off when storage throws", () => {
     const blocked = {
       getItem: () => {
         throw new Error("blocked");
       },
     };
-    expect(debugEnabled(blocked)).toBe(true);
+    expect(verboseEnabled(blocked)).toBe(false);
+  });
+});
+
+describe("createLog", () => {
+  it("keeps detail quiet by default but always reports problems", () => {
+    const sink = vi.fn();
+    const log = createLog(storage(null), sink);
+
+    log.detail("scan", { found: 3 });
+    expect(sink).not.toHaveBeenCalled();
+
+    log.problem("no verdicts");
+    expect(sink).toHaveBeenCalledWith("[slop-radar]", "no verdicts");
+  });
+
+  it("emits detail once switched on", () => {
+    const sink = vi.fn();
+    createLog(storage("on"), sink).detail("scan");
+    expect(sink).toHaveBeenCalledWith("[slop-radar]", "scan");
+  });
+});
+
+describe("distinct", () => {
+  it("reports each message once, however often it recurs", () => {
+    const report = vi.fn();
+    const once = distinct(report);
+
+    once("no API key set");
+    once("no API key set");
+    once("HTTP 401");
+
+    expect(report.mock.calls).toEqual([["no API key set"], ["HTTP 401"]]);
   });
 });
 
@@ -32,19 +62,5 @@ describe("formatCounts", () => {
 
   it("says so when there is nothing to report", () => {
     expect(formatCounts({})).toBe("(none)");
-  });
-});
-
-describe("createLogger", () => {
-  it("prefixes every message", () => {
-    const sink = vi.fn();
-    createLogger(storage(null), sink)("scan", { found: 3 });
-    expect(sink).toHaveBeenCalledWith("[slop-radar]", "scan", { found: 3 });
-  });
-
-  it("says nothing when disabled", () => {
-    const sink = vi.fn();
-    createLogger(storage("off"), sink)("scan");
-    expect(sink).not.toHaveBeenCalled();
   });
 });

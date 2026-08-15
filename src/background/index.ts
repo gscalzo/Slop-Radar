@@ -7,14 +7,17 @@
  * "service worker". Every reason a verdict does not happen is logged there.
  */
 import { loadConfig, type MeterConfig } from "../config";
-import { createLogger } from "../debug";
+import { createLog, distinct } from "../debug";
 import { createOpenAiCompatibleJudge } from "../judge/openaiCompatible";
 import type { JudgeResult } from "../judge/types";
 import type { ExpandRequestMessage, JudgeRequestMessage, JudgeResponseMessage } from "../messages";
 
-// MV3 workers have no localStorage, so there is no opt-out to read here; the
-// worker console is already opt-in.
-const log = createLogger({ getItem: () => null }, console.log.bind(console));
+// MV3 workers have no localStorage, and nobody opens this console by accident —
+// it takes a deliberate click in chrome://extensions — so detail stays on here
+// while the page console keeps quiet.
+const log = createLog({ getItem: () => "on" }, console.log.bind(console));
+// Every post hits the same wall for the same reason; report each reason once.
+const problemOnce = distinct((message) => log.problem(message));
 
 const cache = new Map<string, JudgeResult>();
 
@@ -59,11 +62,12 @@ async function judgeNow(config: MeterConfig, message: JudgeRequestMessage): Prom
   try {
     const result = await createOpenAiCompatibleJudge(config).judge(message.text);
     cache.set(message.hash, result);
-    log(`verdict ${message.hash}: likelihood ${result.likelihood}, ${result.phrases.length} phrases`);
+    log.detail(`verdict ${message.hash}: likelihood ${result.likelihood}, ${result.phrases.length} phrases`);
     return { ok: true, result };
   } catch (error) {
     const reason = errorReason(error);
-    log(`FAILED ${message.hash}: ${reason}`);
+    log.detail(`failed ${message.hash}: ${reason}`);
+    problemOnce(`judge request failed: ${reason}`);
     return { ok: false, reason };
   }
 }
@@ -72,13 +76,14 @@ async function handleJudge(message: JudgeRequestMessage): Promise<JudgeResponseM
   const cached = cache.get(message.hash);
   if (cached) return { ok: true, result: cached };
   const config = await loadConfig();
-  log(
+  log.detail(
     `judging ${message.hash}: ${message.text.length} chars, model=${config.model}, ` +
       `baseUrl=${config.baseUrl}, apiKey=${config.apiKey === "" ? "MISSING" : "set"}`,
   );
   const blocked = unusable(config) ?? (await permissionProblem(config));
   if (blocked !== null) {
-    log(`refused ${message.hash}: ${blocked}`);
+    log.detail(`refused ${message.hash}: ${blocked}`);
+    problemOnce(`no verdicts: ${blocked}`);
     return { ok: false, reason: blocked };
   }
   return judgeNow(config, message);
@@ -105,4 +110,4 @@ chrome.commands.onCommand.addListener((command) => {
   if (command === "expand-truncated") void relayExpandCommand();
 });
 
-log("service worker started");
+log.detail("service worker started");

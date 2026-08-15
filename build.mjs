@@ -16,4 +16,9 @@ await build({
 });
 
 await cp("manifest.json", "dist/manifest.json");
+// PNGs only: the SVG sources are for editing, not for shipping in the zip.
+await cp("icons", "dist/icons", {
+  recursive: true,
+  filter: (src) => !src.endsWith(".svg"),
+});
 await cp("src/options/options.html", "dist/options.html");

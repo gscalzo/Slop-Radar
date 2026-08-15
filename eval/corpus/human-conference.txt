@@ -1,7 +1,0 @@
-Back from FOSDEM. Three things I'm still thinking about:
-
-Rich Hickey's old point about incidental complexity came up in about four different talks, none of which cited him. Ideas escape their authors.
-
-The Nix room was packed to the point people were sitting in the corridor. Whatever you think of it, that community has momentum.
-
-Best talk I saw was from a maintainer of a library I've used for eight years and never once thought about. She's doing it alone, unpaid, for roughly 40,000 dependent repos. I sponsored her on the train home. You should probably check who's holding up your stack.

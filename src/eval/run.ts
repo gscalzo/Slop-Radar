@@ -2,22 +2,20 @@
  * Offline model evaluation. Run with `npm run eval`.
  *
  * The tier boundaries and the default model were both chosen without evidence.
- * This measures them: every post in eval/corpus is labelled by its filename
- * prefix ("ai-" or "human-"), and each configured model scores all of them
- * through the real production path — same rubric, same prompt, same parser —
- * so the numbers describe what ships, not a re-implementation.
+ * This measures them: every post in eval/corpus and eval/local is labelled by
+ * its filename prefix ("ai-" or "human-"), and each model scores all of them
+ * through the real production path — same rubric, same prompt, same parser — so
+ * the numbers describe what ships, not a re-implementation.
  *
- * What matters is separation, not accuracy: a judge whose AI and human posts
- * score 0.9 and 0.1 is useful at any threshold, while one scoring 0.6 and 0.5
- * is useless at every threshold. The human traps in the corpus (em dashes,
- * emoji lists, "not X — it's Y") carry the most weight, because calling a
- * person's own writing machine-made is the expensive mistake.
+ * Human samples must come from `scripts/fetch-corpus.mjs`, which only accepts
+ * text third parties timestamped before 2020. Writing "human" examples by hand
+ * proves nothing: whoever writes them is imitating the thing being measured.
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { withDefaults } from "../config";
 import { createOpenAiCompatibleJudge } from "../judge/openaiCompatible";
-import { judgeTier } from "../verdict";
+import { auc, bestThreshold, likelihoods, mean, sweep, type Scored } from "./report";
 
 interface Case {
   name: string;
@@ -25,19 +23,14 @@ interface Case {
   text: string;
 }
 
-interface Score {
-  case: Case;
-  likelihood: number | null;
-  error?: string;
-}
-
 const CORPUS_DIRS = ["eval/corpus", "eval/local"];
+const RESULTS = "eval/local/results.csv";
 
 function entriesIn(dir: string): { name: string }[] {
   try {
     return readdirSync(dir, { withFileTypes: true });
   } catch {
-    return []; // eval/local is optional: your own posts, never committed.
+    return []; // eval/local is optional: fetched samples, never committed.
   }
 }
 
@@ -46,24 +39,14 @@ function loadCases(): Case[] {
   for (const dir of CORPUS_DIRS) {
     for (const file of entriesIn(dir)) {
       if (!file.name.endsWith(".txt")) continue;
-      const label = file.name.startsWith("ai-") ? "ai" : "human";
       cases.push({
         name: file.name.replace(/\.txt$/, ""),
-        label,
+        label: file.name.startsWith("ai-") ? "ai" : "human",
         text: readFileSync(join(dir, file.name), "utf8").trim(),
       });
     }
   }
   return cases;
-}
-
-function safeReaddir(dir: string): boolean {
-  try {
-    readdirSync(dir);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 function configFor(model: string): ReturnType<typeof withDefaults> {
@@ -74,93 +57,129 @@ function configFor(model: string): ReturnType<typeof withDefaults> {
   });
 }
 
-async function scoreCase(model: string, item: Case): Promise<Score> {
-  const config = configFor(model);
+async function scoreCase(model: string, item: Case): Promise<Scored & { error?: string }> {
   try {
-    const result = await createOpenAiCompatibleJudge(config).judge(item.text);
-    return { case: item, likelihood: result.likelihood };
+    const result = await createOpenAiCompatibleJudge(configFor(model)).judge(item.text);
+    return { name: item.name, label: item.label, likelihood: result.likelihood };
   } catch (error) {
     return {
-      case: item,
+      name: item.name,
+      label: item.label,
       likelihood: null,
       error: error instanceof Error ? error.message : String(error),
     };
   }
 }
 
-function mean(values: number[]): number {
-  return values.length === 0 ? 0 : values.reduce((a, b) => a + b, 0) / values.length;
+/** Requests are issued in small batches: 120 at once trips rate limits. */
+async function scoreAll(model: string, cases: Case[], size = 6): Promise<(Scored & { error?: string })[]> {
+  const out: (Scored & { error?: string })[] = [];
+  for (let i = 0; i < cases.length; i += size) {
+    out.push(...(await Promise.all(cases.slice(i, i + size).map((item) => scoreCase(model, item)))));
+    process.stdout.write(`\r  ${model}: ${out.length}/${cases.length}`);
+  }
+  process.stdout.write("\n");
+  return out;
 }
 
-function pad(value: string, width: number): string {
-  return value.length >= width ? value : value + " ".repeat(width - value.length);
-}
+const pad = (value: string, width: number): string => value.padEnd(width);
+const num = (value: number, places = 2): string => value.toFixed(places);
 
-function fmt(value: number | null): string {
-  return value === null ? "  err" : value.toFixed(2);
-}
-
-/** Tiers a judge would assign, compared with the label. */
-function misread(score: Score): boolean {
-  if (score.likelihood === null) return false;
-  const tier = judgeTier(score.likelihood);
-  return score.case.label === "ai" ? tier === "green" : tier !== "green";
-}
-
-function summarise(model: string, scores: Score[]): string {
-  const value = (label: "ai" | "human"): number[] =>
-    scores.filter((s) => s.case.label === label && s.likelihood !== null).map((s) => s.likelihood!);
-  const ai = mean(value("ai"));
-  const human = mean(value("human"));
-  const errors = scores.filter((s) => s.likelihood === null).length;
-  return [
-    pad(model, 22),
-    pad(ai.toFixed(2), 10),
-    pad(human.toFixed(2), 13),
-    pad((ai - human).toFixed(2), 12),
-    pad(String(scores.filter(misread).length), 10),
-    errors === 0 ? "" : `${errors} errors`,
-  ].join("");
-}
-
-function printTable(models: string[], cases: Case[], byModel: Map<string, Score[]>): void {
+function printSummary(byModel: Map<string, Scored[]>): void {
   console.log(
-    pad("model", 22) + pad("mean(ai)", 10) + pad("mean(human)", 13) + pad("separation", 12) + "misreads",
+    `\n${pad("model", 22)}${pad("AUC", 8)}${pad("mean(ai)", 10)}${pad("mean(human)", 13)}${pad("gap", 8)}errors`,
   );
-  for (const [model, scores] of byModel) console.log(summarise(model, scores));
+  for (const [model, scores] of byModel) {
+    const ai = likelihoods(scores, "ai");
+    const human = likelihoods(scores, "human");
+    const errors = scores.filter((s) => s.likelihood === null).length;
+    console.log(
+      pad(model, 22) +
+        pad(num(auc(ai, human), 3), 8) +
+        pad(num(mean(ai)), 10) +
+        pad(num(mean(human)), 13) +
+        pad(num(mean(ai) - mean(human)), 8) +
+        (errors === 0 ? "-" : String(errors)),
+    );
+  }
+  console.log("\nAUC is the model-choice number: probability an AI post outranks a human one.");
+  console.log("1.0 perfect, 0.5 a coin flip. It does not depend on where we put the tiers.");
+}
 
-  console.log(`\n${pad("post", 24)}${pad("label", 8)}${models.map((m) => pad(m, 16)).join("")}`);
-  for (const [index, item] of cases.entries()) {
-    const cells = models.map((m) => pad(fmt(byModel.get(m)![index]!.likelihood), 16));
-    console.log(`${pad(item.name, 24)}${pad(item.label, 8)}${cells.join("")}`);
+function printSweep(model: string, scores: Scored[]): void {
+  const ai = likelihoods(scores, "ai");
+  const human = likelihoods(scores, "human");
+  const rows = sweep(ai, human);
+  const best = bestThreshold(rows);
+  console.log(`\n${model} — where should the boundary sit? (${ai.length} ai, ${human.length} human)`);
+  console.log(`${pad("threshold", 12)}${pad("humans flagged", 17)}ai missed`);
+  for (const row of rows) {
+    const mark = row.threshold === best?.threshold ? "  ← fewest mistakes" : "";
+    console.log(
+      pad(num(row.threshold, 2), 12) + pad(String(row.falsePositives), 17) + row.falseNegatives + mark,
+    );
   }
 }
 
-function printErrors(byModel: Map<string, Score[]>): void {
-  const errors = [...byModel.values()].flat().filter((s) => s.error);
+function printWorst(model: string, scores: Scored[], count = 5): void {
+  const rank = (label: "ai" | "human", dir: 1 | -1): Scored[] =>
+    scores
+      .filter((s) => s.label === label && s.likelihood !== null)
+      .sort((a, b) => dir * ((b.likelihood ?? 0) - (a.likelihood ?? 0)))
+      .slice(0, count);
+  const show = (title: string, rows: Scored[]): void => {
+    console.log(`\n${model} — ${title}`);
+    for (const row of rows) console.log(`  ${num(row.likelihood ?? 0)}  ${row.name}`);
+  };
+  show("humans scored highest (the costly mistakes)", rank("human", 1));
+  show("ai scored lowest (the misses)", rank("ai", -1));
+}
+
+function writeCsv(models: string[], byModel: Map<string, Scored[]>): void {
+  const header = ["post", "label", ...models].join(",");
+  const names = byModel.get(models[0]!)!.map((s) => s.name);
+  const rows = names.map((name, i) => {
+    const cells = models.map((m) => byModel.get(m)![i]?.likelihood ?? "");
+    return [name, byModel.get(models[0]!)![i]!.label, ...cells].join(",");
+  });
+  writeFileSync(RESULTS, `${[header, ...rows].join("\n")}\n`, "utf8");
+  console.log(`\nfull scores: ${RESULTS}`);
+}
+
+function describeCorpus(cases: Case[], models: string[]): void {
+  const ai = cases.filter((c) => c.label === "ai").length;
+  console.log(`corpus: ${cases.length} posts (${ai} ai, ${cases.length - ai} human)`);
+  if (ai === 0 || ai === cases.length) {
+    console.log("WARNING: one class is empty; AUC will be meaningless.");
+  }
+  console.log(`models: ${models.join(", ")} — ${models.length * cases.length} requests\n`);
+}
+
+function printErrors(byModel: Map<string, Scored[]>): void {
+  const errors = [...byModel.values()].flat().filter((s) => (s as { error?: string }).error);
   if (errors.length === 0) return;
-  console.log(`\nerrors:\n${errors.map((s) => `  ${s.case.name}: ${s.error}`).join("\n")}`);
+  console.log(`\nerrors (${errors.length}, first 5 shown):`);
+  for (const e of errors.slice(0, 5)) console.log(`  ${e.name}: ${(e as { error?: string }).error}`);
 }
 
 async function main(): Promise<void> {
   const models = (process.argv[2] ?? "gpt-5.6-luna,gpt-5.6-terra").split(",");
   const cases = loadCases();
-  if (cases.length === 0) throw new Error("no cases found in eval/corpus");
-  console.log(`corpus: ${cases.length} posts, models: ${models.join(", ")}\n`);
+  if (cases.length === 0) throw new Error("no cases found — run scripts/fetch-corpus.mjs first");
+  describeCorpus(cases, models);
 
-  const byModel = new Map<string, Score[]>();
-  for (const model of models) {
-    byModel.set(model, await Promise.all(cases.map((item) => scoreCase(model, item))));
-  }
+  const byModel = new Map<string, Scored[]>();
+  for (const model of models) byModel.set(model, await scoreAll(model, cases));
 
-  printTable(models, cases, byModel);
+  report(models, byModel);
+}
+
+function report(models: string[], byModel: Map<string, Scored[]>): void {
+  printSummary(byModel);
+  for (const [model, scores] of byModel) printSweep(model, scores);
+  for (const [model, scores] of byModel) printWorst(model, scores);
+  writeCsv(models, byModel);
   printErrors(byModel);
-  console.log("\nTiers: green < 0.35, yellow < 0.7, red above. A misread is an");
-  console.log("ai-labelled post scored green, or a human-labelled post scored above green.");
 }
 
-if (!safeReaddir("eval/corpus")) {
-  console.error("run this from the repository root: npm run eval");
-  process.exit(1);
-}
 void main();

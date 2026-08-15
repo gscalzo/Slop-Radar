@@ -35,6 +35,7 @@ export function buildReport(
     excerpt: f.excerpt,
     start: f.start,
     source: "pattern" as const,
+    detector: f.detector, // groups the report and selects the explanation
   }));
   return {
     tier: verdict.tier,

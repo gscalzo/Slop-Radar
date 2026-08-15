@@ -142,11 +142,59 @@ stays on-device as pattern-only estimates. Nothing is ever sent anywhere else.
 Cost stays bounded: only items that enter the viewport are analysed, and verdicts are
 cached per post/comment URN.
 
-## Evaluating the judge
+## What the evaluation found
 
-Which model to use, and where the tier boundaries belong, are empirical
-questions. `npm run eval` answers them by scoring a labelled corpus through the
-real production path — same rubric, same prompt, same parser.
+The default model and the tier boundaries started as guesses. They have now been
+measured. Full reasoning in [ADR 0012](./docs/adr/0012-calibration-from-measurement.md);
+the short version:
+
+**Method.** 104 posts scored through the real production path — same rubric,
+same prompt, same parser. 60 human, timestamped by third parties between 2013
+and 2019, three years before ChatGPT existed. 44 AI, written by a model from a
+different family than the models being judged, so nothing grades its own output.
+The headline metric is **AUC**: the probability that a random AI post outranks a
+random human one. 1.0 is perfect, 0.5 is a coin flip. It is used instead of
+accuracy because it does not depend on where the tiers sit — and the tiers were
+exactly what was in question.
+
+| Model | AUC | mean(ai) | mean(human) | Cost (in / out) | Verdict |
+| --- | --- | --- | --- | --- | --- |
+| **`gpt-5.6-luna`** | **0.870** | 0.44 | 0.12 | $1.00 / $6.00 | kept as default |
+| `gpt-5.6-terra` | 0.857 | 0.33 | 0.09 | $2.50 / $15.00 | 2.5× the price, no better |
+
+Terra is not an upgrade. Its 0.013 deficit is well inside the noise of a 44×60
+comparison, so the honest reading is a tie — and the cheap model wins a tie.
+
+**Split by difficulty, the same corpus says something more useful:**
+
+| Against real human writing | luna | terra |
+| --- | --- | --- |
+| Posts with obvious patterning (emoji lists, staccato, stock openers) | **0.973** | 0.955 |
+| AI written with concrete specifics and no surface tells | 0.707 | 0.702 |
+
+The judge is near-perfect on formulaic writing and close to blind on careful AI,
+which scores 0.14 on average — indistinguishable from human writing at 0.12.
+**That is the tool working, not failing.** A post with no AI-typical patterning
+*should* read green; the corpus labels those posts "ai" because a machine wrote
+them, and that mismatch is a property of the labels, not the judge. Slop Radar
+measures patterning, and now there is evidence rather than assertion behind the
+claim.
+
+**Where the boundaries landed.** Red moved from 0.7 to 0.6: the highest-scoring
+human in the corpus reached 0.58, so 0.6 costs no human a red border while
+moving a third more of the obviously-patterned posts out of yellow. Yellow
+stayed at 0.35 — every boundary between 0.125 and 0.30 produced the same total
+error, trading fewer misses for more humans flagged, and that trade is not
+neutral when the whole posture is never to accuse.
+
+The single human the judge scored above 0.35 is a 2013 Stack Exchange answer
+opening "This is a really good question" and continuing in imperative bullets.
+It reads formulaic because it *is* formulaic — written seven years before
+ChatGPT. The badge says "AI tells: medium", never "this person used AI".
+
+## Running the evaluation yourself
+
+`npm run eval` re-runs all of the above.
 
 ```bash
 cp .env.example .env      # put SLOP_RADAR_API_KEY in it; .env is gitignored

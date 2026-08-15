@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it } from "vitest";
-import { openReportModal, type ReportViewModel } from "./modal";
+import { openReportModal, type ReportItem, type ReportViewModel } from "./modal";
 
 function vm(overrides: Partial<ReportViewModel> = {}): ReportViewModel {
   return {
@@ -14,7 +14,13 @@ function vm(overrides: Partial<ReportViewModel> = {}): ReportViewModel {
       { start: 24, end: 25, label: "Em dash" },
     ],
     items: [
-      { label: "Stock AI phrase: “delve”", excerpt: "delve", start: 6, source: "pattern" },
+      {
+        label: "Stock AI phrase: “delve”",
+        excerpt: "delve",
+        start: 6,
+        source: "pattern",
+        detector: "ai-vocabulary",
+      },
       { label: "formulaic emphasis", excerpt: "it matters", start: null, source: "judge" },
     ],
     ...overrides,
@@ -56,6 +62,44 @@ describe("openReportModal", () => {
     const items = [...shadow.querySelectorAll("li")].map((li) => li.textContent);
     expect(items[0]).toContain("at char 6");
     expect(items[1]).toContain("not located");
+  });
+
+  it("heads each pattern with what it is and why it counts", () => {
+    const shadow = openReportModal(document, vm()).shadowRoot!;
+    const headings = [...shadow.querySelectorAll("h3")].map((h) => h.textContent);
+    const why = [...shadow.querySelectorAll(".why")].map((p) => p.textContent);
+
+    expect(headings[0]).toBe("Stock LLM vocabulary");
+    expect(why[0]).toContain("appears far more often in model output");
+    expect(headings).toContain("Flagged by the model");
+  });
+
+  it("groups repeats of one pattern under a single explanation, with a count", () => {
+    const dash = (start: number): ReportItem => ({
+      label: "Em dash",
+      excerpt: "—",
+      start,
+      source: "pattern",
+      detector: "em-dash",
+    });
+    const shadow = openReportModal(
+      document,
+      vm({ items: [dash(24), dash(30), dash(35)] }),
+    ).shadowRoot!;
+
+    expect([...shadow.querySelectorAll("h3")].map((h) => h.textContent)).toEqual(["Em dashes (3)"]);
+    expect(shadow.querySelectorAll(".why")).toHaveLength(1);
+    expect(shadow.querySelectorAll("li")).toHaveLength(3);
+  });
+
+  it("says nothing about the model when the model found nothing", () => {
+    const shadow = openReportModal(
+      document,
+      vm({ items: [{ label: "Em dash", excerpt: "—", start: 24, source: "pattern", detector: "em-dash" }] }),
+    ).shadowRoot!;
+    expect([...shadow.querySelectorAll("h3")].map((h) => h.textContent)).not.toContain(
+      "Flagged by the model",
+    );
   });
 
   it("skips overlapping spans instead of corrupting the text", () => {

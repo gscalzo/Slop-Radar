@@ -1,4 +1,7 @@
+import { explain as defaultExplain, type DetectorNote } from "../core/explain";
 import type { AbstainReason, Tier } from "../core/types";
+
+type Explain = (detector: string) => DetectorNote;
 
 export interface HighlightSpan {
   start: number;
@@ -12,6 +15,8 @@ export interface ReportItem {
   /** Offset in the post text, or null when a judge quote could not be located. */
   start: number | null;
   source: "pattern" | "judge";
+  /** Detector id, for pattern items: groups the list and selects the explanation. */
+  detector?: string;
 }
 
 export interface ReportViewModel {
@@ -51,7 +56,10 @@ const STYLE = `
   .text { white-space: pre-wrap; background: #f6f6f6; border-radius: 6px; padding: 12px;
     margin-bottom: 12px; }
   mark { background: #ffe08a; border-radius: 2px; }
-  ol { padding-left: 20px; } li { margin-bottom: 6px; }
+  .findings section { margin: 0 0 14px; }
+  h3 { font-size: 13px; margin: 0 0 2px; }
+  .why { color: #555; margin: 0 0 6px; font-size: 12.5px; line-height: 1.45; }
+  ul { padding-left: 18px; margin: 0; } li { margin-bottom: 3px; color: #666; font-size: 12.5px; }
   code { background: #f0f0f0; padding: 0 4px; border-radius: 3px; }
   .close { float: right; border: none; background: none; font-size: 18px; cursor: pointer; }
 `;
@@ -92,18 +100,70 @@ function renderItem(doc: Document, item: ReportItem): HTMLElement {
   code.textContent = item.excerpt;
   li.appendChild(code);
   const where = item.start === null ? "not located" : `at char ${item.start}`;
-  const source = item.source === "judge" ? "model" : "pattern";
-  li.appendChild(doc.createTextNode(` — ${item.label} (${source}, ${where})`));
+  const detail = item.source === "judge" ? `${item.label} — ${where}` : where;
+  li.appendChild(doc.createTextNode(` ${detail}`));
   return li;
 }
 
-function renderItems(doc: Document, items: ReportItem[]): HTMLElement {
-  const list = doc.createElement("ol");
+function section(doc: Document, title: string, why: string, items: ReportItem[]): HTMLElement {
+  const box = doc.createElement("section");
+  const heading = doc.createElement("h3");
+  heading.textContent = items.length > 1 ? `${title} (${items.length})` : title;
+  box.appendChild(heading);
+  const note = doc.createElement("p");
+  note.className = "why";
+  note.textContent = why;
+  box.appendChild(note);
+  const list = doc.createElement("ul");
   for (const item of items) list.appendChild(renderItem(doc, item));
-  return list;
+  box.appendChild(list);
+  return box;
 }
 
-function renderPanel(doc: Document, vm: ReportViewModel, close: () => void): HTMLElement {
+/** Groups pattern items by detector, preserving the order they were found in. */
+function groupByDetector(items: ReportItem[]): Map<string, ReportItem[]> {
+  const groups = new Map<string, ReportItem[]>();
+  for (const item of items) {
+    const key = item.detector ?? "unknown";
+    groups.set(key, [...(groups.get(key) ?? []), item]);
+  }
+  return groups;
+}
+
+/**
+ * One section per pattern, each headed by what it is and why it counts, rather
+ * than a flat list of matches. A reader looking at "Em dash — at char 24" has
+ * no way to know what they are being told; the note is the whole point.
+ */
+function renderItems(doc: Document, items: ReportItem[], explain: Explain): HTMLElement {
+  const box = doc.createElement("div");
+  box.className = "findings";
+  const patterns = items.filter((i) => i.source === "pattern");
+  const judged = items.filter((i) => i.source === "judge");
+
+  for (const [detector, group] of groupByDetector(patterns)) {
+    const note = explain(detector);
+    box.appendChild(section(doc, note.title, note.why, group));
+  }
+  if (judged.length > 0) {
+    box.appendChild(
+      section(
+        doc,
+        "Flagged by the model",
+        "Phrases the model quoted as reading AI-patterned, with its own reason for each. Quotes it could not place in the text are shown as “not located”.",
+        judged,
+      ),
+    );
+  }
+  return box;
+}
+
+function renderPanel(
+  doc: Document,
+  vm: ReportViewModel,
+  close: () => void,
+  explain: Explain,
+): HTMLElement {
   const panel = doc.createElement("div");
   panel.className = "panel";
   const closeBtn = doc.createElement("button");
@@ -124,7 +184,7 @@ function renderPanel(doc: Document, vm: ReportViewModel, close: () => void): HTM
     panel.appendChild(summary);
   }
   panel.appendChild(renderHighlighted(doc, vm.text, vm.spans));
-  panel.appendChild(renderItems(doc, vm.items));
+  panel.appendChild(renderItems(doc, vm.items, explain));
   const disclaimer = doc.createElement("p");
   disclaimer.className = "disclaimer";
   disclaimer.textContent =
@@ -134,7 +194,11 @@ function renderPanel(doc: Document, vm: ReportViewModel, close: () => void): HTM
 }
 
 /** Shadow-DOM report overlay. Returns the host element (already appended). */
-export function openReportModal(doc: Document, vm: ReportViewModel): HTMLElement {
+export function openReportModal(
+  doc: Document,
+  vm: ReportViewModel,
+  explain: Explain = defaultExplain,
+): HTMLElement {
   const host = doc.createElement("div");
   host.className = "aitm-modal-host";
   const shadow = host.attachShadow({ mode: "open" });
@@ -155,7 +219,7 @@ export function openReportModal(doc: Document, vm: ReportViewModel): HTMLElement
   backdrop.addEventListener("click", (event) => {
     if (event.target === backdrop) close();
   });
-  backdrop.appendChild(renderPanel(doc, vm, close));
+  backdrop.appendChild(renderPanel(doc, vm, close, explain));
   shadow.appendChild(backdrop);
   doc.addEventListener("keydown", onKey);
   doc.body.appendChild(host);

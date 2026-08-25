@@ -8,6 +8,7 @@
  *
  *   SLOP_RADAR_API_KEY=sk-… npm run eval
  *   SLOP_RADAR_API_KEY=sk-… npm run eval -- gpt-5.6-luna,gpt-5.6-terra
+ *   SLOP_RADAR_RUBRIC=humanizer npm run eval   # measure the other rubric source
  */
 import { build } from "esbuild";
 import { loadEnv } from "./env.mjs";
@@ -33,5 +34,6 @@ await build({
   logLevel: "warning",
 });
 
-process.argv.splice(1, 1); // hand argv[2] to the bundle as the model list
+// The bundle is imported in-process, so it sees this script's argv unchanged
+// and reads the model list from argv[2] itself.
 await import(`../${OUT}`);

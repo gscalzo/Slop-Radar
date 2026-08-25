@@ -36,7 +36,7 @@ describe("createOpenAiCompatibleJudge", () => {
     const body = JSON.parse(init.body);
     expect(body.model).toBe("test-model");
     expect(body.messages[1].content).toBe("Let us delve into this.");
-    // With no override, the system prompt embeds the vendored humanizer skill.
+    // With no override, the system prompt embeds the bundled distilled rubric.
     expect(body.messages[0].content).toMatch(/em dash/i);
     expect(body.messages[0].content).toContain("judge, not an editor");
     expect(body.messages[0].content).toContain('"likelihood"');

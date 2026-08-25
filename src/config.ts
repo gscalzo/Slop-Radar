@@ -1,3 +1,10 @@
+/**
+ * Which vendored catalog the judge's rubric comes from. Each source keeps its
+ * own bundled snapshot, upstream URL, judging preamble, and measured red
+ * boundary (ADR 0014).
+ */
+export type RubricSource = "ai-writing-patterns" | "humanizer";
+
 export interface MeterConfig {
   /**
    * Whether the cloud judge is enabled at all. The model judge is the primary
@@ -13,10 +20,14 @@ export interface MeterConfig {
   apiKey: string;
   /** Whether to check comments in addition to posts. */
   checkComments: boolean;
+  /** The rubric catalog the judge reads: the tiered ai-writing-patterns
+   * catalog (default) or the classic humanizer skill. */
+  rubricSource: RubricSource;
   /**
-   * User override of the humanizer rubric sent to the judge. Empty string means
-   * "track the default" — the downloaded upstream copy if present, else the
-   * bundled skills/humanizer/SKILL.md snapshot (ADR 0006, ADR 0008).
+   * User override of the detection rubric sent to the judge. Empty string means
+   * "track the default" — the runtime-distilled copy if present, else the
+   * bundled skills/ai-writing-patterns/DISTILLED.md snapshot (ADR 0006, ADR
+   * 0008, ADR 0013).
    */
   skillText: string;
   /**
@@ -29,6 +40,13 @@ export interface MeterConfig {
    * Empty string means use bundled snapshot.
    */
   distilledSkill: string;
+  /**
+   * Which rubric source produced downloadedSkill/distilledSkill. A stored
+   * distillation only applies while it matches rubricSource; switching
+   * sources falls back to that source's bundled snapshot until the next
+   * update. Empty string means none.
+   */
+  distilledSource: string;
   /** Stronger model used to distill the skill into a compact rubric. */
   distillModel: string;
 }
@@ -41,9 +59,11 @@ export const DEFAULT_CONFIG: MeterConfig = {
   model: "gpt-5.6-luna",
   apiKey: "",
   checkComments: true,
+  rubricSource: "ai-writing-patterns",
   skillText: "",
   downloadedSkill: "",
   distilledSkill: "",
+  distilledSource: "",
   distillModel: "gpt-5.6-terra",
 };
 
@@ -64,9 +84,11 @@ export function withDefaults(stored: unknown): MeterConfig {
     model: str(partial.model, DEFAULT_CONFIG.model),
     apiKey: optionalStr(partial.apiKey).trim(),
     checkComments: partial.checkComments !== false,
+    rubricSource: partial.rubricSource === "humanizer" ? "humanizer" : "ai-writing-patterns",
     skillText: optionalStr(partial.skillText),
     downloadedSkill: optionalStr(partial.downloadedSkill),
     distilledSkill: optionalStr(partial.distilledSkill),
+    distilledSource: optionalStr(partial.distilledSource),
     distillModel: str(partial.distillModel, DEFAULT_CONFIG.distillModel),
   };
 }

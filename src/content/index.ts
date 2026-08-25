@@ -5,7 +5,7 @@
  */
 import { linkedInAdapter } from "../adapters/linkedin";
 import type { FeedItem } from "../adapters/types";
-import { loadConfig } from "../config";
+import { loadConfig, type RubricSource } from "../config";
 import { createLog, distinct, formatCounts } from "../debug";
 import { analyze } from "../core/analyze";
 import { hashText } from "../core/hash";
@@ -27,6 +27,9 @@ const log = createLog(localStorage, console.log.bind(console));
 const problemOnce = distinct((message) => log.problem(message));
 
 let checkComments = true;
+// The judge's red boundary is rubric-dependent (ADR 0014); captured at boot
+// like checkComments, so open tabs pick up an Options change on reload.
+let rubricSource: RubricSource = "ai-writing-patterns";
 
 interface ItemState {
   item: FeedItem;
@@ -78,7 +81,7 @@ function applyJudgeResponse(state: ItemState, response: JudgeResponseMessage | u
     return;
   }
   state.judge = response.result;
-  state.verdict = combine(state.verdict.heuristic, response.result);
+  state.verdict = combine(state.verdict.heuristic, response.result, rubricSource);
   log.detail(
     `judge ok for ${state.item.id}: likelihood ${response.result.likelihood} → ${state.verdict.tier}`,
   );
@@ -121,7 +124,7 @@ function process(item: FeedItem): void {
   } else {
     const flags = analyze(item.text);
     const floor = item.kind === "comment" ? { minWords: COMMENT_MIN_WORDS } : undefined;
-    const verdict = combine(scoreText(item.text, flags, floor), null);
+    const verdict = combine(scoreText(item.text, flags, floor), null, rubricSource);
     const state: ItemState = { item, hash, flags, judge: null, verdict, judgeRequested: false };
     states.set(item.id, state);
     decorate(state);
@@ -242,9 +245,11 @@ function debounce(fn: () => void, ms: number): () => void {
 async function boot(): Promise<void> {
   log.detail(`booted on ${location.href}`);
   try {
-    checkComments = (await loadConfig()).checkComments;
+    const config = await loadConfig();
+    checkComments = config.checkComments;
+    rubricSource = config.rubricSource;
   } catch {
-    // storage unavailable — keep the default (on)
+    // storage unavailable — keep the defaults
   }
   document.body.appendChild(expandButton);
   chrome.runtime.onMessage.addListener((message: ExpandRequestMessage) => {

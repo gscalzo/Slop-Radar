@@ -54,6 +54,8 @@ function configFor(model: string): ReturnType<typeof withDefaults> {
     model,
     baseUrl: process.env.SLOP_RADAR_BASE_URL ?? "https://api.openai.com/v1",
     apiKey: process.env.SLOP_RADAR_API_KEY ?? process.env.OPENAI_API_KEY ?? "",
+    // Which rubric source to measure (ADR 0014); junk falls back to the default.
+    rubricSource: process.env.SLOP_RADAR_RUBRIC,
   });
 }
 
@@ -149,6 +151,7 @@ function writeCsv(models: string[], byModel: Map<string, Scored[]>): void {
 function describeCorpus(cases: Case[], models: string[]): void {
   const ai = cases.filter((c) => c.label === "ai").length;
   console.log(`corpus: ${cases.length} posts (${ai} ai, ${cases.length - ai} human)`);
+  console.log(`rubric: ${configFor("probe").rubricSource}`);
   if (ai === 0 || ai === cases.length) {
     console.log("WARNING: one class is empty; AUC will be meaningless.");
   }

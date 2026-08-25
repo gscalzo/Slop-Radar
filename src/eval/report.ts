@@ -21,7 +21,7 @@ export function likelihoods(scores: Scored[], label: "ai" | "human"): number[] {
  * U / ROC AUC). 1.0 is perfect ranking, 0.5 is a coin flip.
  *
  * This is the number to choose a model on, because it is threshold-independent:
- * accuracy and misread counts measure the judge and our arbitrary 0.35/0.7
+ * accuracy and misread counts measure the judge and our measured 0.35/0.7
  * boundaries at the same time, and a model that ranks perfectly but scores
  * everything in a narrow band would look bad on those while being ideal — you
  * would simply move the boundary.

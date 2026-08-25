@@ -92,7 +92,7 @@ describe("distillSkill", () => {
       );
     }) as typeof fetch;
 
-    const result = await distillSkill(LONG_INPUT, config, fakeFetch);
+    const result = await distillSkill(LONG_INPUT, config, "humanizer", fakeFetch);
 
     expect(result).toEqual(distilledContent);
     expect(capturedRequest.headers?.["content-type"]).toBe("application/json");
@@ -100,7 +100,31 @@ describe("distillSkill", () => {
     const bodyObj = JSON.parse(capturedRequest.body!);
     expect(bodyObj.model).toBe("gpt-4");
     expect(bodyObj.messages[0].role).toBe("system");
+    expect(bodyObj.messages[0].content).toContain("humanizer skill");
     expect(bodyObj.messages[1].content).toBe(LONG_INPUT);
+  });
+
+  it("uses the catalog extraction prompt for the ai-writing-patterns source", async () => {
+    const config: DistillConfig = {
+      baseUrl: "https://api.example.com",
+      apiKey: "test-key",
+      distillModel: "gpt-4",
+    };
+    const captured: { body?: string } = {};
+    const fakeFetch = (async (_url: string, init?: RequestInit) => {
+      captured.body = init?.body as string;
+      return new Response(
+        JSON.stringify({
+          choices: [{ message: { content: "# Rubric\n\n1. Pattern A keeps its number.".repeat(20) } }],
+        }),
+      );
+    }) as typeof fetch;
+
+    await distillSkill(LONG_INPUT, config, "ai-writing-patterns", fakeFetch);
+
+    const system = JSON.parse(captured.body!).messages[0].content as string;
+    expect(system).toContain("ai-writing-patterns catalog");
+    expect(system).toContain("never renumber");
   });
 
   it("should unwrap markdown code fences", async () => {
@@ -123,7 +147,7 @@ describe("distillSkill", () => {
       );
     }) as typeof fetch;
 
-    const result = await distillSkill(LONG_INPUT, config, fakeFetch);
+    const result = await distillSkill(LONG_INPUT, config, "humanizer", fakeFetch);
 
     expect(result).not.toContain("```");
     expect(result).toContain("# AI Detection Rubric");
@@ -140,10 +164,10 @@ describe("distillSkill", () => {
       return new Response(null, { status: 500 });
     }) as typeof fetch;
 
-    await expect(distillSkill(LONG_INPUT, config, fakeFetch)).rejects.toThrow(
+    await expect(distillSkill(LONG_INPUT, config, "humanizer", fakeFetch)).rejects.toThrow(
       SkillDistillError,
     );
-    await expect(distillSkill(LONG_INPUT, config, fakeFetch)).rejects.toThrow(
+    await expect(distillSkill(LONG_INPUT, config, "humanizer", fakeFetch)).rejects.toThrow(
       /HTTP 500/,
     );
   });
@@ -164,10 +188,10 @@ describe("distillSkill", () => {
       );
     }) as typeof fetch;
 
-    await expect(distillSkill(LONG_INPUT, config, fakeFetch)).rejects.toThrow(
+    await expect(distillSkill(LONG_INPUT, config, "humanizer", fakeFetch)).rejects.toThrow(
       SkillDistillError,
     );
-    await expect(distillSkill(LONG_INPUT, config, fakeFetch)).rejects.toThrow(
+    await expect(distillSkill(LONG_INPUT, config, "humanizer", fakeFetch)).rejects.toThrow(
       /looks empty or refused/,
     );
   });
@@ -188,10 +212,10 @@ describe("distillSkill", () => {
       );
     }) as typeof fetch;
 
-    await expect(distillSkill(LONG_INPUT, config, fakeFetch)).rejects.toThrow(
+    await expect(distillSkill(LONG_INPUT, config, "humanizer", fakeFetch)).rejects.toThrow(
       SkillDistillError,
     );
-    await expect(distillSkill(LONG_INPUT, config, fakeFetch)).rejects.toThrow(
+    await expect(distillSkill(LONG_INPUT, config, "humanizer", fakeFetch)).rejects.toThrow(
       /did not compress/,
     );
   });
@@ -211,10 +235,10 @@ describe("distillSkill", () => {
       );
     }) as typeof fetch;
 
-    await expect(distillSkill(LONG_INPUT, config, fakeFetch)).rejects.toThrow(
+    await expect(distillSkill(LONG_INPUT, config, "humanizer", fakeFetch)).rejects.toThrow(
       SkillDistillError,
     );
-    await expect(distillSkill(LONG_INPUT, config, fakeFetch)).rejects.toThrow(
+    await expect(distillSkill(LONG_INPUT, config, "humanizer", fakeFetch)).rejects.toThrow(
       /returned no content/,
     );
   });

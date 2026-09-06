@@ -63,22 +63,37 @@ configure, behind any OpenAI-compatible `/chat/completions` endpoint, which retu
 quotes get located back to exact offsets locally, because LLMs cannot be trusted with
 character positions.
 
-**The rubric is the real humanizer skill, vendored and updatable in one click.** The
-source of truth is the community-maintained
-[blader/humanizer](https://github.com/blader/humanizer) skill (MIT, based on
-Wikipedia's "Signs of AI writing" guide), vendored verbatim at
-[`skills/humanizer/SKILL.md`](./skills/humanizer/SKILL.md) with provenance in
-`UPSTREAM.json`. It is a ~30 KB *rewriting* skill, though, so the per-post judge does
-not read it directly. **Update skill from GitHub** in Options runs a two-stage
-pipeline: download the latest skill, then distill it with a stronger model (default
-`gpt-5.6-terra`, configurable) into a compact detection rubric holding just the
-signals, the false-positive rules and the clusters principle. A reviewed distilled
-snapshot ([`skills/humanizer/DISTILLED.md`](./skills/humanizer/DISTILLED.md)) ships in
-the repo for first-run and keyless installs. Precedence: your edit beats runtime
-distillation, which beats the bundled snapshot. The judging preamble and the JSON
-output contract are code-owned, so no update or edit can break parsing
+**The rubric ships from two vendored catalogs, selectable in Options and
+updatable in one click.** The default source of truth is the
+[gscalzo/gio-skills](https://github.com/gscalzo/gio-skills) `ai-writing-patterns`
+catalog (MIT): 58 numbered tells across vocabulary, rhetoric, tone, structure,
+formatting, and near-proof fingerprints, each carrying a signal tier, plus
+false-positive guards and the signs of genuinely human writing. Its lineage folds
+in Wikipedia's "Signs of AI writing" guide via blader/humanizer and several other
+catalogs, so it is a superset of the rubric earlier versions used. It is vendored
+verbatim at
+[`skills/ai-writing-patterns/SKILL.md`](./skills/ai-writing-patterns/SKILL.md)
+with provenance in `UPSTREAM.json`. The classic
+[blader/humanizer](https://github.com/blader/humanizer) skill stays vendored
+alongside it at [`skills/humanizer/SKILL.md`](./skills/humanizer/SKILL.md), and
+**Rubric source** in Options switches between them — each keeps its own judging
+preamble, upstream URL, and measured red boundary
+([ADR 0014](./docs/adr/0014-selectable-rubric-source.md)). Both carry rewriting
+guidance the judge does not need, so the per-post judge does not read them
+directly. **Update
+skill from GitHub** in Options runs a two-stage pipeline: download the latest
+catalog, then distill it with a stronger model (default `gpt-5.6-terra`,
+configurable) into a compact detection rubric holding just the tiered signals,
+the false-positive rules and the clusters principle. A reviewed distilled
+snapshot per source
+([`skills/ai-writing-patterns/DISTILLED.md`](./skills/ai-writing-patterns/DISTILLED.md),
+[`skills/humanizer/DISTILLED.md`](./skills/humanizer/DISTILLED.md))
+ships in the repo for first-run and keyless installs. Precedence: your edit beats
+runtime distillation, which beats the bundled snapshot. The judging preamble and
+the JSON output contract are code-owned, so no update or edit can break parsing
 ([ADR 0008](./docs/adr/0008-upstream-skill-sync.md),
-[ADR 0009](./docs/adr/0009-distilled-rubric.md)). The deterministic detectors below
+[ADR 0009](./docs/adr/0009-distilled-rubric.md),
+[ADR 0013](./docs/adr/0013-rubric-source-gio-skills.md)). The deterministic detectors below
 approximate the same signals in fast local regexes.
 
 **The local pattern engine annotates and stands in.** Deterministic detectors always
@@ -180,8 +195,10 @@ cached per post and comment.
 ## What the evaluation found
 
 The default model and the tier boundaries started as guesses. They have now been
-measured. Full reasoning is in
-[ADR 0012](./docs/adr/0012-calibration-from-measurement.md); the short version:
+measured — and re-measured after the rubric moved to the ai-writing-patterns
+catalog. Full reasoning is in
+[ADR 0012](./docs/adr/0012-calibration-from-measurement.md) and
+[ADR 0013](./docs/adr/0013-rubric-source-gio-skills.md); the short version:
 
 **Method.** 104 posts scored through the real production path, meaning the same
 rubric, the same prompt and the same parser. 60 of them human, timestamped by third
@@ -192,34 +209,49 @@ a random human one, where 1.0 is perfect and 0.5 is a coin flip. AUC rather than
 accuracy, because accuracy depends on where the tiers sit and the tiers were exactly
 what was in question.
 
-| Model | AUC | mean(ai) | mean(human) | Cost (in / out) | Verdict |
+All four model × rubric combinations, measured in fresh runs on the same
+corpus (obvious = emoji lists, staccato, stock openers; hard = AI written with
+concrete specifics and no surface tells):
+
+| Model × rubric | AUC | obvious | hard | top human | Cost (in / out) |
 | --- | --- | --- | --- | --- | --- |
-| **`gpt-5.6-luna`** | **0.870** | 0.44 | 0.12 | $1.00 / $6.00 | kept as default |
-| `gpt-5.6-terra` | 0.857 | 0.33 | 0.09 | $2.50 / $15.00 | 2.5× the price, no better |
+| `luna` × humanizer | 0.863 | 0.945 | 0.732 | 0.58 | $1.00 / $6.00 |
+| `luna` × ai-writing-patterns | 0.844 | 0.932 | 0.704 | 0.64 | $1.00 / $6.00 |
+| `terra` × humanizer | 0.883 | 0.973 | 0.741 | 0.22 | $2.50 / $15.00 |
+| `terra` × ai-writing-patterns | **0.901** | **0.982** | **0.772** | 0.22 | $2.50 / $15.00 |
 
-Terra is not an upgrade. Its 0.013 deficit sits well inside the noise of a 44×60
-comparison, so the honest reading is a tie, and the cheap model wins a tie.
+Read this with the noise floor in mind: re-running an *identical*
+configuration moved terra × humanizer from 0.857 to 0.883, so differences
+under ~0.03 on this corpus are weather, not climate. What survives that bar:
 
-**Split by difficulty, the same corpus says something more useful:**
+- **The model matters more than the rubric.** Terra outranks luna under both
+  rubrics, and it keeps every human sample at or below 0.22 — far from any
+  boundary — under both. If you will pay 2.5× per post, terra is one Options
+  field away regardless of rubric choice.
+- **The rubrics tie on AUC, with consistent leanings.** The tiered catalog is
+  directionally best with terra on every split; the humanizer catalogue is
+  directionally better with luna. Every individual gap is within noise.
+- **At the shipped boundaries, the catalog is gentler on humans with luna.**
+  The humanizer rubric runs luna hotter (mean(ai) 0.41 vs 0.36) and puts
+  three human samples in yellow (0.58, 0.43, 0.38); the catalog puts exactly
+  one (0.64). The trade: the hotter scores also catch a few more AI posts at
+  yellow. Given the never-accuse posture, the default stays
+  luna × ai-writing-patterns.
 
-| Against real human writing | luna | terra |
-| --- | --- | --- |
-| Posts with obvious patterning (emoji lists, staccato, stock openers) | **0.973** | 0.955 |
-| AI written with concrete specifics and no surface tells | 0.707 | 0.702 |
+The judge is very good at formulaic writing and nearly useless on careful AI,
+which averages 0.11–0.14 against 0.10–0.12 for real humans, under every
+combination. **That is the intended behaviour rather than a defect.** A post
+with no AI-typical patterning *should* read green. The corpus only labels those posts "ai" because a machine happened to
+write them, which is a property of the labels. Slop Radar measures patterning, and
+there is now evidence behind the claim instead of assertion.
 
-So the judge is very good at formulaic writing and nearly useless on careful AI, which
-averages 0.14 against 0.12 for real humans. **That is the intended behaviour rather
-than a defect.** A post with no AI-typical patterning *should* read green. The corpus
-only labels those posts "ai" because a machine happened to write them, which is a
-property of the labels. Slop Radar measures patterning, and there is now evidence
-behind the claim instead of assertion.
-
-**Where the boundaries landed.** Red moved from 0.7 to 0.6, because the highest-scoring
-human in the corpus reached 0.58, so 0.6 costs nobody a red border while moving a
-third more of the obviously-patterned posts out of yellow. Yellow stayed at 0.35.
-Every boundary between 0.125 and 0.30 produced the same total error while trading
-fewer misses for more humans flagged, and that trade is not neutral when the whole
-posture is never to accuse.
+**Where the boundaries landed.** Each rubric source keeps the red boundary its
+own evaluation produced, by the same rule: no human sample gets a red border.
+The highest-scoring human — the same formulaic answer under both rubrics —
+reaches 0.64 under ai-writing-patterns (red: 0.7) and 0.58 under humanizer
+(red: 0.6). Yellow is 0.35 for both: the next-highest human sits well below
+it, and trading more flagged humans for fewer misses is not neutral when the
+whole posture is never to accuse.
 
 The single human the judge scored above 0.35 is a 2013 Stack Exchange answer that
 opens "This is a really good question" and continues in imperative bullets. It reads
@@ -234,6 +266,7 @@ formulaic because it is formulaic, written seven years before ChatGPT. The badge
 cp .env.example .env      # put SLOP_RADAR_API_KEY in it; .env is gitignored
 npm run eval              # 104 posts × 2 models
 npm run eval -- gpt-5.6-luna,gpt-5.6-terra,gpt-5.4-nano
+SLOP_RADAR_RUBRIC=humanizer npm run eval   # measure the other rubric source
 ```
 
 The corpus lives in `eval/corpus`: 104 posts, 60 human and 44 AI, with
@@ -301,8 +334,9 @@ The model judge sits behind an interface and is faked in tests, so CI needs no A
 ## Project layout
 
 ```
-skills/         the humanizer skill, vendored from blader/humanizer (MIT),
-                with UPSTREAM.json provenance; the judge's default rubric
+skills/         both rubric catalogs, vendored with UPSTREAM.json provenance:
+                ai-writing-patterns (gscalzo/gio-skills, MIT; the default)
+                and humanizer (blader/humanizer, MIT), selectable in Options
 src/core        detectors, density scoring, quote location; pure, fully tested
 src/judge       OpenAI-compatible judge client (the primary engine)
 src/adapters    SiteAdapter interface + the LinkedIn adapter: the ONLY file that

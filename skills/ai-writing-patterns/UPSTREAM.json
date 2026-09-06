@@ -1,0 +1,10 @@
+{
+  "repo": "gscalzo/gio-skills",
+  "url": "https://github.com/gscalzo/gio-skills",
+  "rawUrl": "https://raw.githubusercontent.com/gscalzo/gio-skills/main/skills/ai-writing-patterns/SKILL.md",
+  "commit": "ee9f25a67618f49eeb8f79d4cb1d6f1dfeb6af69",
+  "version": "1.2.1",
+  "license": "MIT",
+  "fetchedAt": "2026-08-20",
+  "note": "SKILL.md is the ai-writing-patterns catalog, vendored verbatim from the upstream repository. Refresh by re-copying from rawUrl and updating this file; users can also pull the latest at runtime via Options → Update skill from GitHub."
+}

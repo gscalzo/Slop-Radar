@@ -1,5 +1,5 @@
 /** Options page glue: load/save config, request the API origin permission. */
-import { CONFIG_KEY, loadConfig, withDefaults, type MeterConfig } from "../config";
+import { CONFIG_KEY, loadConfig, withDefaults, type MeterConfig, type RubricSource } from "../config";
 import { createOpenAiCompatibleJudge } from "../judge/openaiCompatible";
 import { defaultRubric } from "../judge/prompt";
 import { fetchLatestSkill } from "../skillUpdate";
@@ -21,10 +21,22 @@ function setStatus(text: string): void {
 
 let downloadedSkill = "";
 let distilledSkill = "";
+let distilledSource = "";
+
+function selectedSource(): RubricSource {
+  return el<HTMLSelectElement>("rubricSource").value === "humanizer"
+    ? "humanizer"
+    : "ai-writing-patterns";
+}
+
+/** The default rubric for the source currently selected in the form. */
+function currentDefault(): string {
+  return defaultRubric(selectedSource(), distilledSkill, distilledSource);
+}
 
 /** An unedited textarea stores as "" so it keeps tracking the default rubric. */
 function skillOverride(value: string): string {
-  return value.trim() === defaultRubric(distilledSkill).trim() ? "" : value;
+  return value.trim() === currentDefault().trim() ? "" : value;
 }
 
 function readForm(): MeterConfig {
@@ -34,9 +46,11 @@ function readForm(): MeterConfig {
     model: field("model").value,
     apiKey: field("apiKey").value,
     checkComments: field("checkComments").checked,
+    rubricSource: selectedSource(),
     skillText: skillOverride(skillBox().value),
     downloadedSkill,
     distilledSkill,
+    distilledSource,
     distillModel: field("distillModel").value,
   });
 }
@@ -111,10 +125,10 @@ async function testConnection(): Promise<void> {
 
 /** Only refresh the textarea when it was still showing the old default. */
 function refreshRubricBox(previousDefault: string): void {
-  if (skillBox().value.trim() === previousDefault) skillBox().value = defaultRubric(distilledSkill);
+  if (skillBox().value.trim() === previousDefault) skillBox().value = currentDefault();
 }
 
-/** Download the upstream skill, distill it into a rubric, and store both (ADR 0008). */
+/** Download the selected source's skill, distill it, and store all three (ADR 0008, ADR 0014). */
 async function updateSkillFromGitHub(): Promise<void> {
   const config = readForm();
   if (config.apiKey === "") {
@@ -123,15 +137,17 @@ async function updateSkillFromGitHub(): Promise<void> {
   }
   if (!(await grantUpdatePermissions(config.baseUrl))) return;
 
-  const previousDefault = defaultRubric(distilledSkill).trim();
+  const source = selectedSource();
+  const previousDefault = currentDefault().trim();
   try {
     setStatus("Downloading skill…");
-    const raw = await fetchLatestSkill();
+    const raw = await fetchLatestSkill(source);
     setStatus(`Distilling with ${config.distillModel}…`);
-    const distilled = await distillSkill(raw, config);
+    const distilled = await distillSkill(raw, config, source);
 
     downloadedSkill = raw;
     distilledSkill = distilled;
+    distilledSource = source;
     await chrome.storage.local.set({ [CONFIG_KEY]: readForm() });
     refreshRubricBox(previousDefault);
     setStatus("Skill updated & distilled ✓");
@@ -144,16 +160,25 @@ async function init(): Promise<void> {
   const config = await loadConfig();
   downloadedSkill = config.downloadedSkill;
   distilledSkill = config.distilledSkill;
+  distilledSource = config.distilledSource;
   field("enabled").checked = config.enabled;
   field("baseUrl").value = config.baseUrl;
   field("model").value = config.model;
   field("apiKey").value = config.apiKey;
   field("checkComments").checked = config.checkComments;
   field("distillModel").value = config.distillModel;
-  skillBox().value = config.skillText || defaultRubric(distilledSkill);
+  el<HTMLSelectElement>("rubricSource").value = config.rubricSource;
+  skillBox().value = config.skillText || currentDefault();
+  // Switching source swaps the shown rubric — but only when the textarea was
+  // still tracking the previous source's default, never over a user's edit.
+  let shownDefault = currentDefault().trim();
+  el<HTMLSelectElement>("rubricSource").addEventListener("change", () => {
+    refreshRubricBox(shownDefault);
+    shownDefault = currentDefault().trim();
+  });
   el<HTMLButtonElement>("save").addEventListener("click", () => void save());
   el<HTMLButtonElement>("resetSkill").addEventListener("click", () => {
-    skillBox().value = defaultRubric(distilledSkill);
+    skillBox().value = currentDefault();
   });
   el<HTMLButtonElement>("updateSkill").addEventListener("click", () => void updateSkillFromGitHub());
   el<HTMLButtonElement>("testConnection").addEventListener("click", () => void testConnection());

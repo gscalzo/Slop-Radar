@@ -13,7 +13,7 @@ describe("buildReport", () => {
   const heuristic = scoreText(TEXT, flags);
 
   it("builds a heuristics-only report", () => {
-    const verdict = combine(heuristic, null);
+    const verdict = combine(heuristic, null, "ai-writing-patterns");
     const vm = buildReport(TEXT, flags, verdict, null, false);
     expect(vm.tier).toBe(verdict.tier);
     expect(vm.items.every((i) => i.source === "pattern")).toBe(true);
@@ -30,7 +30,7 @@ describe("buildReport", () => {
         { quote: "never in the text", reason: "hallucinated" },
       ],
     };
-    const vm = buildReport(TEXT, flags, combine(heuristic, judge), judge, true);
+    const vm = buildReport(TEXT, flags, combine(heuristic, judge, "ai-writing-patterns"), judge, true);
     expect(vm.partial).toBe(true);
     expect(vm.judgeSummary).toBe("Formulaic contrast and stock vocabulary.");
     const judgeSpans = vm.spans.filter((s) => s.label.startsWith("Model:"));

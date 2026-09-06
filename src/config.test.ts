@@ -13,9 +13,11 @@ describe("withDefaults", () => {
       model: " my-model ",
       apiKey: " sk-123 ",
       checkComments: false,
+      rubricSource: "humanizer",
       skillText: "My own rubric.",
       downloadedSkill: "# fresh upstream",
       distilledSkill: "# compact rubric",
+      distilledSource: "humanizer",
       distillModel: " gpt-5.6-sol ",
     });
     expect(config).toEqual({
@@ -24,9 +26,11 @@ describe("withDefaults", () => {
       model: "my-model",
       apiKey: "sk-123",
       checkComments: false,
+      rubricSource: "humanizer",
       skillText: "My own rubric.",
       downloadedSkill: "# fresh upstream",
       distilledSkill: "# compact rubric",
+      distilledSource: "humanizer",
       distillModel: "gpt-5.6-sol",
     });
   });
@@ -43,9 +47,11 @@ describe("withDefaults", () => {
       model: "",
       apiKey: null,
       checkComments: "yes",
+      rubricSource: "something-else",
       skillText: 42,
       downloadedSkill: null,
       distilledSkill: 7,
+      distilledSource: 9,
       distillModel: "",
     });
     expect(config).toEqual(DEFAULT_CONFIG);
